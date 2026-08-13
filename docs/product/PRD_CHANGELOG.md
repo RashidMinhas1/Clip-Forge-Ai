@@ -15,7 +15,7 @@
 ### Added
 - Initial Product Requirements Document (PRD) Draft (`/docs/product/PRD.md`).
 - Detailed product vision, core product principles, and target user personas (YouTubers, Podcasters, Social Creators, Agencies, Freelancers, Beginners, Viral Clip Hunters, Manual Control Enthusiasts).
-- Complete 17-stage user workflow map from Dashboard to Export.
+- Complete end-to-end user workflow map from Dashboard to Export.
 - Functional specifications for Manual Clipping (30/60/90s silence-aware target clipping) and AI Clipping (Hook, curiosity, emotional impact, standalone context, vitality scoring).
 - Explainable Vitality Score calculation methodology and reasoning framework.
 - Multilingual speech-to-text transcription engine specification using `faster-whisper` (Primary Local) and OpenAI Whisper (Cloud Fallback) with RTL support (Urdu, Arabic, Persian).
