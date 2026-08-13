@@ -249,7 +249,7 @@ The clip editor provides focused pre-render preparation for individual approved 
 
 1. **Face Track (Vertical 9:16)**: Uses MediaPipe / OpenCV face detection to track active speaker center-of-mass and dynamically crop wide 16:9 video into vertical 9:16 short-form format.
 2. **Split Screen (9:16)**: Crops speaker video into top half and secondary content into bottom half.
-3. **Split + Gameplay (9:16)**: Combines primary content on top with pre-configured royalty-free gameplay footage on bottom.
+3. **Split + Gameplay (9:16)**: Combines primary content on top with user-provided gameplay video uploads or properly licensed, royalty-free background video loops on bottom. Copyrighted commercial gameplay footage is strictly barred from being pre-bundled with the application.
 4. **Split + Human Reaction (9:16)**: Top/bottom split featuring secondary reaction layer.
 5. **Original Size**: Preserves original aspect ratio without cropping.
 
@@ -417,10 +417,10 @@ All database queries MUST enforce ownership validation: `WHERE user_id = authent
 
 ---
 
-## 25. Open Questions & Recommendations
+## 25. Resolved Product Decisions & Technical Recommendations
 
-### Open Questions:
-1. **Gameplay Asset Integration for Split-Screen**: Should MVP include a small bundle of pre-packaged royalty-free gameplay loops (e.g., Minecraft/Subway Surfers), or allow users to upload custom background video clips? *(Recommendation: Include 3 pre-packaged local loops for MVP).*
+### Resolved Product Decisions:
+1. **Gameplay Asset Integration Strategy**: Bundling commercial copyrighted gameplay footage (e.g., Subway Surfers, Minecraft) is strictly prohibited. The system will support **user-provided background video uploads** and **properly licensed, open-source royalty-free video loops**.
 
 ### Technical Recommendations:
 1. **Pre-packaged `faster-whisper` Model**: Bundle `tiny` and `base` models with Docker container for offline development, while downloading `medium` on first boot.

@@ -5,6 +5,12 @@
 
 ---
 
+## [0.1.1] — 2026-08-13
+### Changed
+- Resolved Open Question #1 (Gameplay Asset Strategy): Explicitly barred bundling commercial copyrighted footage (Subway Surfers, Minecraft). Specified that Split + Gameplay mode will use user-provided video uploads or properly licensed, open-source royalty-free video loops.
+
+---
+
 ## [0.1.0] — 2026-08-13
 ### Added
 - Initial Product Requirements Document (PRD) Draft (`/docs/product/PRD.md`).
