@@ -1,6 +1,6 @@
 # ClipForge AI — Technology Stack & Infrastructure Architecture
 
-> **Status**: LOCKED (Foundation Phase)  
+> **Status**: LOCKED (Foundation Phase Verified)  
 > **Evaluation**: Comprehensive technical evaluation completed for high-performance AI video processing.
 
 ---
@@ -13,11 +13,12 @@
 | **UI Components & Styling** | **Tailwind CSS + shadcn/ui** | Utility-first responsive styling, accessible unstyled primitives (Radix UI), customizable component foundation without unnecessary code bloat. |
 | **Backend API Framework** | **Python (FastAPI)** | Asynchronous non-blocking I/O (`asyncio`), native integration with AI/ML ecosystems (PyTorch, Whisper, OpenCV, MediaPipe), Pydantic request/response schema validation, OpenAPI docs auto-generation. |
 | **Database & ORM** | **PostgreSQL + SQLAlchemy 2.0 (Async) + Alembic** | Enterprise-grade relational DB, JSONB support for complex video/transcript metadata, robust transactional security, schema versioning via Alembic. |
-| **Background Processing** | **Redis + Taskiq / Celery** | Distributed asynchronous task queue for heavy long-running operations (video download, audio extraction, transcription, rendering, AI scoring). |
+| **Background Processing** | **Taskiq + Redis** | Python-native asynchronous task queue framework designed for `asyncio` and FastAPI. Handles heavy long-running operations (video download, audio extraction, transcription, rendering, AI scoring). Highly lightweight compared to Celery. |
 | **Media Processing Engine** | **FFmpeg (CLI & Python wrapper)** | Industry-standard high-performance video/audio demuxing, decoding, encoding, filter graph manipulation (framing, split-screen, captions rendering). |
-| **AI Routing & Intelligence** | **Multi-Provider AI Router (OpenAI / Gemini / OpenRouter / Local LLMs)** | Vendor-agnostic provider abstraction layer with Pydantic structured output validation, token usage tracking, and automated retry mechanisms. |
-| **Storage Abstraction** | **S3-Compatible Object Storage (MinIO local / AWS S3 prod)** | Unified storage driver interface supporting local filesystem for dev and cloud object storage for production. |
-| **Containerization** | **Docker & Docker Compose** | Reproducible multi-container runtime environment for FastAPI, Next.js, PostgreSQL, Redis, and FFmpeg workers. |
+| **AI Routing & Intelligence** | **Multi-Provider AI Router (OpenAI / Gemini / OpenRouter / Local LLMs)** | Vendor-agnostic provider abstraction layer with Pydantic structured output validation, token usage tracking, server-side credential isolation, and automated retry mechanisms. |
+| **Storage Abstraction** | **S3-Compatible Object Storage (MinIO local / AWS S3 prod)** | Unified storage driver interface supporting local filesystem for dev and cloud object storage for production via `StorageDriver`. |
+| **Containerization** | **Docker & Docker Compose** | Reproducible multi-container runtime environment for FastAPI, Next.js, PostgreSQL, Redis, and Taskiq worker processes. |
+| **Version Control** | **Git & GitHub** | Distributed source control with milestone feature branching (`milestone/XXX-name`). |
 
 ---
 
@@ -28,7 +29,10 @@
 - **Go**: High throughput, but weak ecosystem for AI model integration and computer vision pipelines.
 - **Python (FastAPI)**: Selected as the primary backend engine because AI/ML clip discovery, transcription segmenting, silence detection, visual subject tracking, and LLM structured prompt pipelines are central to ClipForge AI. FastAPI provides async web throughput comparable to Node.js while keeping AI/ML integration native.
 
-### 2.2 UI Design System Strategy
+### 2.2 Background Job Architecture Decision (Taskiq + Redis)
+- **Taskiq + Redis** was selected over Celery. Taskiq is built natively for modern Python `asyncio` ecosystems and integrates seamlessly with FastAPI dependency injection and async Pydantic models. It eliminates unnecessary Celery configuration overhead while cleanly handling async video downloading, speech recognition, AI clip evaluation, and FFmpeg rendering background tasks. The background processing architecture remains abstracted so it can be swapped if extreme future scale requires another queue driver.
+
+### 2.3 UI Design System Strategy
 - **shadcn/ui** provides standard accessible primitives (Dialogs, Dropdowns, Progress bars, Sliders, Tabs, Sheet sidebars).
 - Custom video playback, transcript sync, caption style customization, and visual framing preview controls will be layered cleanly on top of Tailwind CSS design tokens.
 

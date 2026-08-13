@@ -5,38 +5,44 @@ out/
 build/
 dist/
 
-# Python / FastAPI
+# Python / FastAPI / Bytecode
 __pycache__/
 *.py[cod]
 *$py.class
-.venv/
-venv/
-ENV/
-env/
 .pytest_cache/
 .coverage
 htmlcov/
 
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
 # Environment files & Secrets
 .env
-.env*.local
-.env.production
-.env.staging
+.env.*
+!.env.example
 *.pem
 *.key
 *.cert
+*.pfx
 
-# Media / Processing Temp storage
-/tmp/
-/media_temp/
+# Temporary Media & File Uploads
+tmp/
+temp/
+processing/
+uploads/
+renders/
 /storage/local/
 *.mp4
 *.mp3
 *.wav
 *.m4a
 *.mov
+*.webm
 
-# IDE / System
+# IDE / OS Files
 .DS_Store
 Thumbs.db
 .vscode/

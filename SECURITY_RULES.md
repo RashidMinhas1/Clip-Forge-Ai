@@ -1,6 +1,6 @@
 # ClipForge AI — Security Architecture & Data Privacy Rules
 
-> **Status**: LOCKED (Foundation Phase)  
+> **Status**: LOCKED (Foundation Phase Verified)  
 > **Scope**: Mandatory System-wide Security & Isolation Controls  
 
 ---
@@ -13,9 +13,10 @@
 
 ---
 
-## 2. Multi-Tenant User Isolation & Data Privacy
+## 2. Application-Level Tenant Isolation & Data Privacy
 
-- **Row-Level Authorization Enforcer**: Every database query fetching projects, video sources, transcripts, clips, or renders MUST explicitly include filtering by the authenticated user's ID (`WHERE user_id = current_user.id`).
+- **Application-Level Tenant Authorization**: Security boundaries are governed by explicit application-level ownership checks (`WHERE user_id = authenticated_user.id`) enforced across all backend service handlers and queries for all user-owned entities (Projects, Sources, Videos, Transcripts, Clips, Edits, Caption configurations, Render Jobs, Exports, AI Jobs).
+- **PostgreSQL Row-Level Security (RLS) Policy**: PostgreSQL Row-Level Security (RLS) may be evaluated as a future defense-in-depth layer. It is not currently active, and security reliance rests strictly on verified application-level authorization boundaries.
 - **File System Isolation**: Video files, audio clips, thumbnails, and transcripts MUST be written to directory structures segmented by `user_id`. Direct path traversal (`../`) is strictly prevented by enforcing UUID validation on file request parameters.
 - **Pre-Signed / Authorized Media Streaming**: Media files MUST NOT be stored in publicly accessible web server roots. Access is provided exclusively through authenticated API endpoints verifying ownership or short-lived signed tokens.
 

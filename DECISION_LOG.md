@@ -5,36 +5,72 @@
 
 ---
 
-## ADR-001: Selection of Modular Monolith Architecture
-- **Date**: 2026-08-13
-- **Status**: APPROVED
-- **Context**: Early-stage application needs low operational complexity, fast iteration, high maintainability, and clean subsystem separation for media/AI workloads.
-- **Decision**: Adopt a Modular Monolith structure. Keep FastAPI backend and Next.js frontend clean, well-isolated by modules, without deploying complex microservices micro-overhead initially.
-- **Consequences**: Easy local development via Docker Compose; clear subsystem boundaries allow extracting heavy rendering workers later if high scaling requires it.
-
----
-
-## ADR-002: Selection of Python (FastAPI) as Core Backend Platform
+## ADR-001: Selection of Python (FastAPI) as Core Backend Platform
 - **Date**: 2026-08-13
 - **Status**: APPROVED
 - **Context**: ClipForge AI relies heavily on computer vision (face/speaker intelligence), audio processing (silence detection, Whisper speech-to-text), LLM structured output parsing, and FFmpeg filter manipulation.
 - **Decision**: Select Python (FastAPI) as the backend framework over Node.js and Go.
-- **Consequences**: Grants native access to top-tier AI/ML packages (PyTorch, OpenAI, MediaPipe, OpenCV, Whisper) while maintaining asynchronous web throughput via FastAPI and asyncio.
+- **Consequences**: Grants native access to top-tier AI/ML packages (PyTorch, OpenAI, MediaPipe, OpenCV, Whisper) while maintaining asynchronous web throughput via FastAPI and `asyncio`.
 
 ---
 
-## ADR-003: Multi-Provider AI Abstraction Layer
+## ADR-002: Selection of PostgreSQL as Primary Database
 - **Date**: 2026-08-13
 - **Status**: APPROVED
-- **Context**: Relying strictly on a single AI provider risks vendor lock-in, rate limiting outages, and price fluctuations.
-- **Decision**: Architect an AI Router with provider adapters supporting OpenAI, Google Gemini, OpenRouter, and local LLM backends. Enforce server-side schema validation via Pydantic on all LLM responses.
-- **Consequences**: Application code is decoupled from underlying AI models; credentials remain server-side; prompt templates are version-controlled.
+- **Context**: Transactional reliability, robust JSONB support for complex video/transcript metadata, and multi-tenant user project isolation are required.
+- **Decision**: Select PostgreSQL with SQLAlchemy 2.0 Async ORM and Alembic migration management.
+- **Consequences**: Provides reliable relational data modeling and native JSON querying capabilities.
 
 ---
 
-## ADR-004: Mandatory Feature `.agent.md` Specification Architecture
+## ADR-003: Selection of Taskiq + Redis for Background Jobs
 - **Date**: 2026-08-13
 - **Status**: APPROVED
-- **Context**: Large complex AI video processing applications require strict behavioral specs for each feature to prevent hallucinated behaviors, broken API contracts, or silent regression.
-- **Decision**: Enforce that every major technical feature MUST have a standalone spec file in `docs/features/FEATURE_NAME.agent.md` defining inputs, schemas, business logic, processing rules, error handling, forbidden behaviors, and acceptance criteria.
-- **Consequences**: AI agents and developers have an unambiguous source of truth for feature implementations. Behavioral changes require explicit spec updates and re-approval.
+- **Context**: Heavy async operations (video downloading, audio extraction, speech recognition, AI clip analysis, FFmpeg rendering) must not block API HTTP worker threads.
+- **Decision**: Select Taskiq + Redis as the primary background task processing system over Celery.
+- **Consequences**: Provides a Python `asyncio`-native task queue with native FastAPI dependency injection, eliminating heavy Celery configuration overhead. Remains replaceable if future scale requires another queue driver.
+
+---
+
+## ADR-004: Selection of FFmpeg as Media Processing Engine
+- **Date**: 2026-08-13
+- **Status**: APPROVED
+- **Context**: High-performance video crop framing, audio extraction, clip trimming, dynamic subtitle burning, and rendering compositing are essential core features.
+- **Decision**: Adopt FFmpeg (CLI & Python wrapper) as the underlying media processing engine.
+- **Consequences**: Provides industry-standard media manipulation capabilities with zero external cloud video rendering SaaS vendor lock-in.
+
+---
+
+## ADR-005: Selection of Modular Monolith Architecture
+- **Date**: 2026-08-13
+- **Status**: APPROVED
+- **Context**: Early-stage application requires low operational overhead, rapid development velocity, clean code isolation, and high maintainability without premature microservice complexity.
+- **Decision**: Adopt a Modular Monolith architecture pattern (`Next.js + FastAPI + PostgreSQL + Redis + Taskiq + FFmpeg`).
+- **Consequences**: Simplifies local development via Docker Compose and enables extracting heavy background workers into independent micro-services if extreme future scale requires it.
+
+---
+
+## ADR-006: Selection of Application-Level Tenant Authorization
+- **Date**: 2026-08-13
+- **Status**: APPROVED
+- **Context**: Multi-tenant user isolation is critical for user video privacy. Every database entity must strictly belong to an authenticated user.
+- **Decision**: Implement Application-Level Tenant Authorization enforcing `WHERE user_id = authenticated_user.id` on all database operations and service handlers.
+- **Consequences**: Ensures strict multi-tenant boundary checks in application code across Projects, Sources, Videos, Transcripts, Clips, Edits, Captions, Renders, Exports, and AI Jobs.
+
+---
+
+## ADR-007: Reservation of PostgreSQL Row-Level Security (RLS) for Future Evaluation
+- **Date**: 2026-08-13
+- **Status**: APPROVED
+- **Context**: Evaluating potential future defense-in-depth security layers without adding premature database setup friction during early development.
+- **Decision**: Document PostgreSQL Row-Level Security (RLS) as a potential future defense-in-depth layer while relying on verified Application-Level Authorization as the active security boundary.
+- **Consequences**: Keeps database migrations simple while preserving clear technical roadmap for future database-level security policy evaluation.
+
+---
+
+## ADR-008: Selection of shadcn/ui + Tailwind CSS for UI Foundation
+- **Date**: 2026-08-13
+- **Status**: APPROVED
+- **Context**: Need a modern, premium, highly responsive UI design system with accessible primitives and customizable dynamic aesthetics.
+- **Decision**: Select shadcn/ui (Radix UI unstyled primitives) paired with Tailwind CSS styling tokens.
+- **Consequences**: Eliminates bloated third-party UI framework restrictions while giving full control over video editing and preview components.

@@ -1,6 +1,6 @@
 # ClipForge AI — Project Directory Structure & Blueprint
 
-> **Status**: LOCKED (Foundation Phase)  
+> **Status**: LOCKED (Foundation Phase Verified)  
 > **Pattern**: Monorepo-style Modular Directory Layout  
 
 ---
@@ -12,10 +12,10 @@ ClipForge-Ai/
 ├── .env.example                     # Environment variable blueprint with safe placeholders
 ├── .gitignore                        # Git exclusion rules (Node, Python, media temp, secrets)
 ├── GLOBAL_RULES.md                   # Universal engineering governance
-├── DEVELOPMENT_WORKFLOW.md          # 17-stage lifecycle protocol
+├── DEVELOPMENT_WORKFLOW.md          # Milestone execution lifecycle protocol
 ├── TECH_STACK.md                    # Technology stack matrix & evaluation
 ├── ARCHITECTURE.md                  # Modular monolith architecture design
-├── SECURITY_RULES.md                # Security, secret handling & data isolation rules
+├── SECURITY_RULES.md                # Security, secret handling & application isolation rules
 ├── PROJECT_MEMORY.md                # Compact context onboarding guide
 ├── PROJECT_STRUCTURE.md             # File tree layout spec (This file)
 ├── FEATURE_REGISTRY.md              # Registry of feature specs (.agent.md files)
@@ -29,7 +29,7 @@ ClipForge-Ai/
 │   ├── features/                    # Dedicated feature agent specifications (.agent.md)
 │   ├── verification/                # Milestone verification audit logs
 │   ├── security/                    # Security threat models & privacy policies
-│   ├── decisions/                   # Change requests & decision logs
+│   ├── decisions/                   # Change requests and decision logs
 │   └── templates/                   # Reusable workflow templates
 │       ├── FEATURE_NAME.agent.md    # Template for feature agent specifications
 │       ├── milestone-X-plan.md      # Template for milestone implementation plans
@@ -55,7 +55,7 @@ ClipForge-Ai/
 │       │   ├── services/            # Business service logic (User, Project, Storage)
 │       │   ├── ai/                  # AI Router & Provider Adapters (OpenAI, Gemini, etc.)
 │       │   ├── media/               # FFmpeg wrapper, audio extraction, visual framing
-│       │   ├── jobs/                # Taskiq/Redis background worker tasks
+│       │   ├── jobs/                # Taskiq/Redis background worker tasks & state machines
 │       │   └── schemas/             # Pydantic schemas for request validation & AI output
 │       └── tests/                   # Backend test suite (Pytest)
 │           ├── unit/

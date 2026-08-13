@@ -1,6 +1,6 @@
 # ClipForge AI — Foundation Phase Master Specification
 
-> **Status**: COMPLETED & LOCKED (Foundation Phase)  
+> **Status**: COMPLETED & VERIFIED (Foundation Phase Patch)  
 > **Scope**: Baseline Architecture, Rules, Workflows, Templates, and Governance  
 > **Product Features Built**: NONE (Strictly enforced)  
 
@@ -15,8 +15,8 @@ The Foundation Phase establishes the complete engineering foundation, developmen
 ## 2. Established Governance & Architecture Core
 
 1. **Dual Rule Layer**:
-   - **Development Workflow Rules**: 17-stage lifecycle enforcing `Analysis -> Plan -> Feature Agent Spec -> User Review -> Approval -> Branch -> Implement -> Test -> Verify -> Report -> User Review -> Commit -> Push -> Merge -> Lock`.
-   - **Application Engineering Rules**: Permanent rules for modular monolith architecture, row-level multi-tenant user isolation, non-blocking async job queues, schema-validated AI output, and secret protection.
+   - **Development Workflow Rules**: Milestone Execution Lifecycle enforcing `PLANNING → ANALYSIS → IMPLEMENTATION / REFACTOR PLAN → FEATURE AGENT DOCUMENTATION → USER REVIEW / APPROVAL → MILESTONE BRANCH → IMPLEMENTATION → TESTING → VERIFICATION → FIXES IF REQUIRED → RE-VERIFICATION → VERIFICATION REPORT → USER APPROVAL → GITHUB PUSH → MERGE / PULL → MILESTONE LOCKED`.
+   - **Application Engineering Rules**: Permanent rules for modular monolith architecture, application-level tenant isolation (`WHERE user_id = authenticated_user.id`), Taskiq + Redis background job queueing, schema-validated AI output, and secret protection.
 
 2. **Planning & Feature Spec Enforcers**:
    - No code implementation occurs without an approved milestone plan (`/docs/milestones/milestone-XXX/milestone-XXX-plan.md`).
@@ -32,7 +32,7 @@ The Foundation Phase establishes the complete engineering foundation, developmen
    - **Frontend**: Next.js (React 19+, TypeScript), Tailwind CSS, shadcn/ui.
    - **Backend**: Python (FastAPI), SQLAlchemy 2.0 (Async), Alembic.
    - **Database**: PostgreSQL.
-   - **Queue**: Redis + Taskiq / Celery worker.
+   - **Background Processing**: Redis + Taskiq worker.
    - **Media Engine**: FFmpeg (CLI & Python wrapper).
    - **Storage**: StorageDriver abstraction (MinIO local / S3 production).
 
@@ -40,6 +40,10 @@ The Foundation Phase establishes the complete engineering foundation, developmen
 
 ## 3. Foundation Deliverables Checklist Verification
 
+- [x] Correct milestone execution lifecycle terminology enforced (no fake fixed 17-milestones claim).
+- [x] Taskiq + Redis background job queue finalized.
+- [x] Application-level tenant isolation security terminology corrected.
+- [x] PostgreSQL RLS documented as optional future defense-in-depth layer.
 - [x] `GLOBAL_RULES.md` created & locked.
 - [x] `DEVELOPMENT_WORKFLOW.md` created & locked.
 - [x] `TECH_STACK.md` created & locked.
@@ -47,10 +51,10 @@ The Foundation Phase establishes the complete engineering foundation, developmen
 - [x] `SECURITY_RULES.md` created & locked.
 - [x] `PROJECT_MEMORY.md` created & locked.
 - [x] `PROJECT_STRUCTURE.md` created & locked.
-- [x] `DECISION_LOG.md` created & locked.
+- [x] `DECISION_LOG.md` created & locked (ADR-001 through ADR-008).
 - [x] `FEATURE_REGISTRY.md` created & locked.
 - [x] `MILESTONE_REGISTRY.md` created & locked.
-- [x] `.env.example` created.
+- [x] `.env.example` created with safe placeholders.
 - [x] Documentation directory tree `/docs/` established.
 - [x] Reusable workflow templates created in `/docs/templates/`:
   - `FEATURE_NAME.agent.md`
