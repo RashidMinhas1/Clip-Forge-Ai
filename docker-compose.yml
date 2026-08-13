@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - INTERNAL_API_URL=http://backend:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=INFO
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000"]
+      - POSTGRES_USER=clipforge
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=clipforge_dev
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # PostgreSQL container is strictly for infrastructure readiness only (MS-002)
+  # Product schema will be implemented in MS-003
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: clipforge
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: clipforge_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Redis is strictly for infrastructure readiness only (MS-002)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

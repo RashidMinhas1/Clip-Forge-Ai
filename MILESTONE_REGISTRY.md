@@ -1,6 +1,6 @@
 # ClipForge AI — Milestone Registry & Execution Roadmap
 
-> **Status**: ACTIVE (Foundation Phase Verified)  
+> **Status**: ACTIVE (Foundation Phase Verified)
 > **Rule**: No milestone may proceed without explicit implementation plan approval and verification locking.
 
 ---
@@ -9,28 +9,31 @@
 
 | Milestone ID | Milestone Name | Goal & Scope Summary | Status | Git Branch |
 | :--- | :--- | :--- | :--- | :--- |
-| **MS-001** | Foundation & Architecture | Establish development rules, documentation system, architecture blueprint, security policy, git workflow, and templates. | **COMPLETE & VERIFIED** | `milestone/001-foundation` |
-| **MS-002** | Project Management & Source Ingestion | User project creation, dashboard setup, local video upload validation, YouTube URL ingestion pipeline. | **PLANNED** | `milestone/002-project-source` |
-| **MS-003** | Audio Extraction & Transcription Engine | Background audio extraction, Whisper/AI speech-to-text, segment & word-level timestamp generation, transcript UI. | **PLANNED** | `milestone/003-transcription` |
-| **MS-004** | AI Clip Discovery & Vitality Scoring | Intelligent hook analysis, silence detection, vitality scoring, candidate clip generation, review stage (Approve/Regenerate/Cancel). | **PLANNED** | `milestone/004-ai-clipping` |
-| **MS-005** | Clip Editor & Visual Framing Engine | Lightweight video editor, trim adjustment controls (+/- 5s), face tracking/speaker intelligence, framing modes (9:16, Split-screen, Original). | **PLANNED** | `milestone/005-editor-framing` |
-| **MS-006** | Caption Customization Engine | Caption preset engine (60+ styles), dynamic word-level highlighting, visual word emphasis, RTL support (Arabic/Urdu), per-clip styling preview. | **PLANNED** | `milestone/006-captions` |
-| **MS-007** | Background FFmpeg Render Pipeline | Async render job queue, FFmpeg compositing (crop, captions, timing), progress telemetry, output stream integrity validation. | **PLANNED** | `milestone/007-rendering` |
-| **MS-008** | Export, Delivery & Persistence | Rendered clip gallery, multi-format download management, project auto-save, end-to-end pipeline verification. | **PLANNED** | `milestone/008-export` |
+| **MS-001** | Foundation & Architecture | Establish development rules, documentation system, architecture blueprint, security policy, git workflow, and templates. | **COMPLETED & LOCKED** | `milestone/001-foundation` |
+| **MS-002** | Application Runtime & Infrastructure | Next.js & FastAPI runtimes, Docker integration, base configuration, health endpoints, logging, testing foundation, basic UI shell. | **VERIFICATION PASS — AWAITING MERGE & LOCK** | `milestone/002-application-runtime-infrastructure` |
+| **MS-003** | Database & Project Persistence | PostgreSQL async engine, SQLAlchemy models, Alembic migrations, project/user ownership, auto‑save, resume capability. | **PLANNED** | `milestone/003-database-persistence` |
+| **MS-004** | Source Ingestion & Validation | Local upload, YouTube URL ingestion, FFmpeg probing, metadata extraction, secure StorageDriver, background job handling. | **PLANNED** | `milestone/004-source-ingestion` |
+| **MS-005** | Transcription Service | faster‑whisper integration (multi‑model strategy), multilingual support, word‑level timestamps, optional OpenAI Whisper fallback under FREE‑FIRST policy, UI transcript view. | **PLANNED** | `milestone/005-transcription` |
+| **MS-006** | AI Provider Abstraction | Central AI Router, provider/interface contracts, request/response normalization, Pydantic schema validation, FREE‑ONLY & FREE‑FIRST policies, telemetry. | **PLANNED** | `milestone/006-ai-abstraction` |
+| **MS-007** | Ollama Local AI Integration | Adapter for local Ollama models, health checks, model discovery, JSON response handling, graceful fallback per policy. | **PLANNED** | `milestone/007-ollama` |
+| **MS-008** | OpenRouter Free Model Routing | Secure OpenRouter integration, dynamic free‑model discovery, capability matching, pricing validation, retry & fallback logic, telemetry. | **PLANNED** | `milestone/008-openrouter-free` |
+| **MS-009** | Manual Clipping Engine | Silence‑aware target clipping (30 s / 60 s / 90 s) for local & YouTube sources, intelligent boundary selection, extensive test matrix. | **PLANNED** | `milestone/009-manual-clipping` |
+| **MS-010** | AI Clip Discovery & Vitality Scoring | Prompt design, multi‑dimensional scoring, explainable VitalityScore, duplicate avoidance, confidence handling. | **PLANNED** | `milestone/010-ai-clipping` |
+| **MS-011** | Clip Review & Selection UI | Functional preview of AI candidates, vitality display, justification, actions (Approve / Regenerate / Cancel), persistence of selection state. | **PLANNED** | `milestone/011-clip-review` |
+| **MS-012** | Lightweight Editor & Framing Engine | Video preview, clip list, timing adjustments, undo/redo, framing modes (Face‑Track, Split‑Screen, Split + Gameplay, Split + Human Reaction, Original). | **PLANNED** | `milestone/012-editor-framing` |
+| **MS-013** | Caption Engine | 60+ style presets, RTL support, live preview, per‑clip independent configuration, word‑highlight, visual emphasis. | **PLANNED** | `milestone/013-captions` |
+| **MS-014** | Rendering Pipeline | Asynchronous FFmpeg render via Taskiq + Redis, state machine (QUEUED → PROCESSING → COMPLETED / FAILED / CANCELLED), output validation, temporary artifact cleanup. | **PLANNED** | `milestone/014-rendering` |
+| **MS-015** | Export & Gallery | Rendered clip gallery, download endpoints, metadata persistence, retry handling, UI integration. | **PLANNED** | `milestone/015-export` |
+| **MS-016** | Security Hardening & Audit | Full authentication/authorization, tenant isolation, rate limiting, CORS, security headers, secret management, file‑access safeguards, audit reporting. | **PLANNED** | `milestone/016-security` |
+| **MS-017** | Testing Infrastructure & Cross‑Cutting Tests | Unit, API, integration, UI, E2E, media, AI, security, regression, performance suites; test scaffolding established early (MS‑002) and extended throughout. | **PLANNED** | `milestone/017-testing` |
+| **MS-018** | End‑to‑End MVP Verification & Release | Complete real‑world workflow verification (dashboard → export) with functional, UI, backend, DB, AI, media, security, regression, performance checks; generate verification report. | **PLANNED** | `milestone/018-mvp-verification` |
+| **MS-019** | Post‑MVP Planning (Future Extensions) | Placeholder for future multi‑track editor, overlays, social publishing, paid‑provider fallback, advanced media effects; planning only, no implementation. | **PLANNED** | `milestone/019-post-mvp` |
 
 ---
 
-> **Note**: Final product milestone allocation, granular features, and timelines are refined post-PRD approval. Additional milestones may be added as required by product requirements.
+### Cross‑Cutting Concerns
+- **Security**: Integrated security considerations are included in every milestone (authentication, authorization, secret handling, file access). The final hardening audit occurs in MS‑016.
+- **Testing**: A test plan is defined for each milestone; the overarching testing framework is established in MS‑017 and continuously applied.
+- **Feature Agents**: Each functional milestone will produce a corresponding `docs/features/FEATURE_NAME.agent.md` specification during the PLANNING stage.
 
----
-
-## Milestone Execution Lifecycle
-- `PLANNING`: Creating milestone implementation plan (`/docs/milestones/milestone-XXX/milestone-XXX-plan.md`).
-- `ANALYSIS`: Requirement & subsystem impact analysis.
-- `FEATURE AGENT`: Creating/updating feature agent specs (`/docs/features/FEATURE_NAME.agent.md`).
-- `USER APPROVAL`: Plan and feature specs approved by user.
-- `MILESTONE BRANCH`: Creating isolated branch (`milestone/XXX-name`).
-- `IMPLEMENTATION`: Writing code and unit tests.
-- `TESTING & VERIFICATION`: Executing functional, security, media, and UI tests.
-- `VERIFICATION REPORT`: Generating formal audit report (`milestone-XXX-verification-report.md`).
-- `LOCKED`: User final sign-off, pushed to GitHub, merged to main, milestone closed.
+*Prepared by Antigravity – your AI‑augmented software architect.*

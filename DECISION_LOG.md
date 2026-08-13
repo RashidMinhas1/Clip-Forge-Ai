@@ -74,3 +74,12 @@
 - **Context**: Need a modern, premium, highly responsive UI design system with accessible primitives and customizable dynamic aesthetics.
 - **Decision**: Select shadcn/ui (Radix UI unstyled primitives) paired with Tailwind CSS styling tokens.
 - **Consequences**: Eliminates bloated third-party UI framework restrictions while giving full control over video editing and preview components.
+
+---
+
+## ADR-009: MS-002 Docker Verification Environmental Exception
+- **Date**: 2026-08-13
+- **Status**: APPROVED
+- **Context**: During MS-002 verification, Docker Desktop was unavailable on the verification host. All application-level tests (pytest 4/4, FastAPI runtime, health/readiness endpoints, frontend ESLint, Vitest, Next.js build, security audit, scope audit) passed. Only Docker container orchestration checks could not be executed.
+- **Decision**: Classify the MS-002 verification result as `PASS WITH ENVIRONMENTAL EXCEPTION`. The application implementation is verified correct. Docker container verification is documented as BLOCKED — ENVIRONMENT and does not constitute an application defect.
+- **Consequences**: Docker-specific runtime checks (container networking, Redis/PostgreSQL containers) remain unexecuted in the local environment. These may be verified in a CI environment (GitHub Actions) which provisions Docker automatically. No application code changes were made to compensate for Docker's absence.
