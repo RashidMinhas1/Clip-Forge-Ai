@@ -1,6 +1,6 @@
 # MS-003 Implementation Plan: Source Ingestion & Validation
 
-**Status**: PROPOSED
+**Status**: LOCKED
 
 ## 1. Objective
 Build the source-ingestion foundation that allows ClipForge AI to safely accept supported video sources (local upload and YouTube URLs) and validate their media metadata before any transcription, clipping, AI analysis, editing, or rendering occurs. This milestone establishes the secure media perimeter for all subsequent processing.

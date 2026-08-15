@@ -11,7 +11,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **MS-001** | Foundation & Architecture | Establish development rules, documentation system, architecture blueprint, security policy, git workflow, and templates. | **COMPLETED & LOCKED** | `milestone/001-foundation` |
 | **MS-002** | Application Runtime & Infrastructure | Next.js & FastAPI runtimes, Docker integration, base configuration, health endpoints, logging, testing foundation, basic UI shell. | **VERIFICATION PASS — AWAITING MERGE & LOCK** | `milestone/002-application-runtime-infrastructure` |
-| **MS-003** | Source Ingestion & Validation | Local upload, YouTube URL ingestion, FFmpeg probing, metadata extraction, secure StorageDriver, background job handling. | **PLANNED** | `milestone/003-source-ingestion` |
+| **MS-003** | Source Ingestion & Validation | Local upload, YouTube URL ingestion, FFmpeg probing, metadata extraction, secure StorageDriver. | **COMPLETED & LOCKED** | `milestone/003-source-ingestion-validation` |
 | **MS-004** | Database Schema & Persistence | PostgreSQL async engine, SQLAlchemy models, Alembic migrations, project/user ownership, auto‑save, resume capability. | **PLANNED** | `milestone/004-database-persistence` |
 | **MS-005** | Transcription Service | faster‑whisper integration (multi‑model strategy), multilingual support, word‑level timestamps, optional OpenAI Whisper fallback under FREE‑FIRST policy, UI transcript view. | **PLANNED** | `milestone/005-transcription` |
 | **MS-006** | AI Provider Abstraction | Central AI Router, provider/interface contracts, request/response normalization, Pydantic schema validation, FREE‑ONLY & FREE‑FIRST policies, telemetry. | **PLANNED** | `milestone/006-ai-abstraction` |
