@@ -1,6 +1,9 @@
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { expect, test, vi, describe, beforeEach } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { expect, test, vi, describe, beforeEach, afterEach } from "vitest";
 import SourceIngestion from "./page";
+import { cleanup } from "@testing-library/react";
 
 // Mock the API client and global fetch
 vi.mock("@/lib/api-client", () => ({
@@ -12,6 +15,10 @@ describe("SourceIngestion Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   test("renders the ingestion UI correctly", () => {
@@ -60,18 +67,15 @@ describe("SourceIngestion Page", () => {
 
     render(<SourceIngestion />);
     
-    const file = new File(["dummy content"], "test.txt", { type: "text/plain" });
-    const input = screen.getByLabelText("Local Video", { selector: "input[type='file']" }) as HTMLInputElement;
-    // We cannot reliably use getByLabelText since we didn't add id, so we use querySelector or assume it's the only file input
+    const file = new File(["dummy content"], "test.mp4", { type: "video/mp4" });
     const fileInput = document.querySelector("input[type='file']") as HTMLInputElement;
-    
     fireEvent.change(fileInput, { target: { files: [file] } });
     
-    const button = screen.getByText("Upload Local");
-    fireEvent.click(button);
+    const form = fileInput.closest("form")!;
+    fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(screen.getByText("Unsupported file extension")).toBeDefined();
+      expect(screen.getByText(/Unsupported file extension/i)).toBeDefined();
     });
   });
 });

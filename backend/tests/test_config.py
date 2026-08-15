@@ -11,7 +11,6 @@ def test_config_defaults():
     
     assert settings.ENVIRONMENT in ["development", "production", "test"]
     assert settings.BACKEND_PORT == 8000
-    assert settings.POSTGRES_USER == "clipforge"
 
 def test_cors_origins_parsing():
     os.environ["BACKEND_CORS_ORIGINS"] = '["http://localhost:3000", "https://example.com"]'

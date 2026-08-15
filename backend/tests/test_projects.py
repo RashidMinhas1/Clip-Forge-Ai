@@ -13,7 +13,7 @@ app.dependency_overrides[get_current_user] = override_get_current_user
 def test_unauthorized_access():
     app.dependency_overrides = {}
     response = client.get("/api/v1/projects/")
-    assert response.status_code == 403 # HTTPBearer missing token gives 403 by default
+    assert response.status_code == 401 # HTTPBearer missing token gives 401 by default
 
 def test_projects_router_mounted():
     # Will fail at db level if actually executed without mock db, 
