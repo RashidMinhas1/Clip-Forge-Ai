@@ -1,6 +1,6 @@
 # MS-004 Database Schema & Persistence
 
-**Status**: AWAITING APPROVAL
+**Status**: LOCKED
 
 ## 1. Purpose
 The purpose of MS-004 is to introduce the persistent data layer required to store and retrieve Clip Forge AI projects and their associated source metadata. This milestone officially transitions the PostgreSQL database (provisioned in MS-002) from an infrastructure component into the active product persistence database.
@@ -9,7 +9,7 @@ The purpose of MS-004 is to introduce the persistent data layer required to stor
 - **MS-001 Foundation**: LOCKED
 - **MS-002 Runtime & Infrastructure**: LOCKED
 - **MS-003 Source Ingestion**: LOCKED
-- **MS-004 Database Persistence**: PLANNING ONLY
+- **MS-004 Database Persistence**: LOCKED
 
 ## 3. Problem Being Solved
 Currently, MS-003 ingests local and YouTube sources and returns an in-memory `SourceMetadata` object to the client, but the application lacks a database to remember sessions, store projects, or associate multiple ingested sources into a cohesive workspace. We need a secure, scalable persistence layer.
