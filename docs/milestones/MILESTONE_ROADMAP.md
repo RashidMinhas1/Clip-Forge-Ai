@@ -17,8 +17,8 @@ ClipForge AI is an AI‑powered platform that transforms long‑form video conte
 ```mermaid
 graph TD;
     MS001[MS-001 Foundation] --> MS002[MS-002 Runtime & Infra];
-    MS002 --> MS003[MS-003 Database & Persistence];
-    MS003 --> MS004[MS-004 Source Ingestion];
+    MS002 --> MS003[MS-003 Source Ingestion];
+    MS003 --> MS004[MS-004 Database & Persistence];
     MS004 --> MS005[MS-005 Transcription];
     MS005 --> MS006[MS-006 AI Provider Abstraction];
     MS006 --> MS007[MS-007 Ollama];
@@ -44,12 +44,12 @@ graph TD;
 - Docker compose, health endpoints, base navigation shell, logging, error handling.
 - Establish testing framework (Jest, Playwright, Pytest) as cross‑cutting foundation.
 
-### MS‑003 – Database & Project Persistence
+### MS‑003 – Source Ingestion & Validation
+- Local upload UI, YouTube URL validation, yt-dlp metadata extraction and acquisition, FFmpeg probing, StorageDriver abstraction.
+
+### MS‑004 – Database Schema & Persistence
 - PostgreSQL async connection, SQLAlchemy models, Alembic migrations.
 - Project, source, user ownership schema; auto‑save & resume architecture.
-
-### MS‑004 – Source Ingestion & Validation
-- Local upload UI, YouTube URL validation, FFmpeg probing, metadata extraction, StorageDriver abstraction, background ingestion jobs.
 
 ### MS‑005 – Transcription Service
 - Integrate faster‑whisper (multi‑model strategy), multilingual support, word‑level timestamps, optional OpenAI Whisper fallback under FREE‑FIRST policy.
@@ -109,12 +109,12 @@ Milestone 019 captures future extensions and is kept as a planning placeholder
 - Paid‑provider fallback is optional and will be introduced only via a future change request.
 
 ## 9. Media Architecture Roadmap
-- Ingestion and FFmpeg probing (MS‑004).
+- Ingestion and FFmpeg probing (MS‑003).
 - Rendering pipeline (MS‑014) with Taskiq + Redis.
 - Validation of rendered assets.
 
 ## 10. Persistence Roadmap
-- Database foundation (MS‑003) and auto‑save mechanisms integrated into subsequent milestones.
+- Database foundation (MS‑004) and auto‑save mechanisms integrated into subsequent milestones.
 
 ## 11. Security Roadmap
 - Security embedded cross‑cutting; comprehensive hardening in MS‑016.
@@ -125,7 +125,7 @@ Milestone 019 captures future extensions and is kept as a planning placeholder
 ## 13. Risk Analysis
 | Risk Area | Mitigation |
 | :--- | :--- |
-| YouTube ingestion failures | Background job with retry & clear user alerts (MS‑004). |
+| YouTube ingestion failures | Robust yt-dlp error handling, clear user alerts (MS‑003). |
 | Long video transcription | Scalable faster‑whisper model selection, streaming processing (MS‑005). |
 | AI provider unavailability | FREE‑ONLY policy, fallback to other free models, explicit user notification (MS‑006‑008). |
 | Rendering large clips | Asynchronous queue, progress telemetry, resource limits (MS‑014). |
@@ -137,7 +137,7 @@ Milestone 019 captures future extensions and is kept as a planning placeholder
 
 ## 15. Dependencies
 - Runtime & Infra (MS‑002) is prerequisite for all later work.
-- Database (MS‑003) needed before source ingestion and persistence.
+- Source Ingestion (MS‑003) needed before Database (MS‑004) and Transcription (MS-005).
 - AI abstraction (MS‑006) must exist before any AI‑driven feature.
 - Security (MS‑016) and testing (MS‑017) are cross‑cutting and run alongside functional work.
 
