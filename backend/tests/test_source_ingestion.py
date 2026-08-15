@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 
@@ -8,6 +9,7 @@ from app.services.source.validator import SourceValidationError
 from app.services.source.media_probe import MediaProbeException
 
 client = TestClient(app)
+test_project_id = str(uuid.uuid4())
 
 @patch("app.services.source.youtube.YouTubeSourceProvider.extract_metadata")
 @patch("app.services.source.youtube.YouTubeSourceProvider.download_video")
@@ -33,7 +35,7 @@ def test_ingest_youtube_success(mock_generate_path, mock_probe, mock_download, m
     }
     mock_generate_path.return_value = "/mock/storage/1234.mp4"
 
-    response = client.post("/api/v1/sources/youtube", json={"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"})
+    response = client.post("/api/v1/sources/youtube", json={"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "project_id": test_project_id})
     
     assert response.status_code == 200
     data = response.json()
@@ -48,7 +50,7 @@ def test_ingest_youtube_success(mock_generate_path, mock_probe, mock_download, m
 def test_ingest_youtube_metadata_failure(mock_extract):
     mock_extract.side_effect = YouTubeProviderException("Not found", "SOURCE_UNAVAILABLE")
 
-    response = client.post("/api/v1/sources/youtube", json={"url": "https://www.youtube.com/watch?v=invalid"})
+    response = client.post("/api/v1/sources/youtube", json={"url": "https://www.youtube.com/watch?v=invalid", "project_id": test_project_id})
     
     assert response.status_code == 400
     data = response.json()["detail"]
@@ -58,7 +60,7 @@ def test_ingest_youtube_metadata_failure(mock_extract):
 
 def test_ingest_youtube_invalid_url():
     # It should fail basic regex validation
-    response = client.post("/api/v1/sources/youtube", json={"url": "https://example.com/video.mp4"})
+    response = client.post("/api/v1/sources/youtube", json={"url": "https://example.com/video.mp4", "project_id": test_project_id})
     
     assert response.status_code == 400
     data = response.json()["detail"]
@@ -86,6 +88,7 @@ def test_ingest_local_success(mock_open, mock_generate_path, mock_probe):
     file_content = b"fake video content"
     response = client.post(
         "/api/v1/sources/local",
+        data={"project_id": test_project_id},
         files={"file": ("test_video.mp4", file_content, "video/mp4")}
     )
 
@@ -100,6 +103,7 @@ def test_ingest_local_unsupported_extension():
     file_content = b"fake document"
     response = client.post(
         "/api/v1/sources/local",
+        data={"project_id": test_project_id},
         files={"file": ("test.pdf", file_content, "application/pdf")}
     )
 

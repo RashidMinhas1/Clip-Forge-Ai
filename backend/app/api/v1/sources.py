@@ -1,5 +1,6 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Form
 from typing import Any
+import uuid
 
 from ...models.source import SourceMetadata, YouTubeIngestionRequest
 from ...services.source.storage import StorageService
@@ -7,35 +8,42 @@ from ...services.source.validator import ValidatorService
 from ...services.source.media_probe import MediaProbeService
 from ...services.source.youtube import YouTubeSourceProvider
 from ...services.source.ingestion import SourceIngestionService
+from ...repositories.source import SourceRepository
+from ...db.database import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/sources", tags=["Sources"])
 
 # Dependency injection
-def get_ingestion_service() -> SourceIngestionService:
+def get_ingestion_service(db: AsyncSession = Depends(get_db)) -> SourceIngestionService:
     storage = StorageService()
     validator = ValidatorService()
     probe = MediaProbeService()
     youtube = YouTubeSourceProvider()
+    source_repository = SourceRepository(db)
     return SourceIngestionService(
         storage_service=storage,
         validator_service=validator,
         media_probe_service=probe,
-        youtube_provider=youtube
+        youtube_provider=youtube,
+        source_repository=source_repository
     )
 
 @router.post("/local", response_model=SourceMetadata)
 async def ingest_local(
+    project_id: uuid.UUID = Form(...),
     file: UploadFile = File(...),
     service: SourceIngestionService = Depends(get_ingestion_service)
 ) -> Any:
     """
     Ingests a local video file.
-    Validates limits and performs media probing synchronously.
+    Validates limits and performs media probing synchronously, then persists asynchronously.
     """
     if not file.filename:
         raise HTTPException(status_code=400, detail="Filename not provided")
         
-    result = service.ingest_local_file(
+    result = await service.ingest_local_file(
+        project_id=project_id,
         filename=file.filename,
         file_stream=file.file,
         size_bytes=file.size or 0
@@ -49,13 +57,14 @@ async def ingest_local(
 @router.post("/youtube", response_model=SourceMetadata)
 async def ingest_youtube(
     request: YouTubeIngestionRequest,
+    project_id: uuid.UUID = Depends(lambda request: request.project_id),
     service: SourceIngestionService = Depends(get_ingestion_service)
 ) -> Any:
     """
     Ingests a YouTube URL.
-    Downloads and probes media synchronously.
+    Downloads and probes media synchronously, then persists asynchronously.
     """
-    result = service.ingest_youtube_url(url=request.url)
+    result = await service.ingest_youtube_url(project_id=request.project_id, url=request.url)
     
     if result.ingestion_status == "failed":
         raise HTTPException(status_code=400, detail=result.model_dump(mode="json"))

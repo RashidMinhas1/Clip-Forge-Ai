@@ -9,6 +9,7 @@ from app.core.logging import setup_logging
 from app.api.v1.health import router as health_router
 
 from app.api.v1.sources import router as sources_router
+from app.api.v1.projects import router as projects_router
 
 # Setup structured logging
 setup_logging(settings.LOG_LEVEL)
@@ -38,8 +39,8 @@ if settings.BACKEND_CORS_ORIGINS:
 
 # Mount routers
 app.include_router(health_router, prefix="/api/v1")
-
 app.include_router(sources_router, prefix="/api/v1")
+app.include_router(projects_router, prefix="/api/v1")
 
 # Global Exception Handler
 @app.exception_handler(Exception)
