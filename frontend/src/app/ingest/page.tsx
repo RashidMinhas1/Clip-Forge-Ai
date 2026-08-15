@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { apiClient } from "@/lib/api-client";
+import { useProject } from "@/contexts/ProjectContext";
+import Link from "next/link";
+import { FolderOpen } from "lucide-react";
 
 interface SourceMetadata {
   source_id: string;
@@ -18,6 +21,7 @@ interface SourceMetadata {
 }
 
 export default function SourceIngestion() {
+  const { activeProject } = useProject();
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,7 +30,7 @@ export default function SourceIngestion() {
 
   const handleYoutubeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!youtubeUrl) return;
+    if (!youtubeUrl || !activeProject) return;
     
     setLoading(true);
     setError(null);
@@ -35,7 +39,7 @@ export default function SourceIngestion() {
     try {
       const data = await apiClient<SourceMetadata>("/api/v1/sources/youtube", {
         method: "POST",
-        body: JSON.stringify({ url: youtubeUrl })
+        body: JSON.stringify({ url: youtubeUrl, project_id: activeProject.id })
       });
       setResult(data);
     } catch (err: any) {
@@ -52,7 +56,7 @@ export default function SourceIngestion() {
 
   const handleFileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file || !activeProject) return;
     
     setLoading(true);
     setError(null);
@@ -60,6 +64,7 @@ export default function SourceIngestion() {
     
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("project_id", activeProject.id);
 
     try {
       // apiClient stringifies objects, so for FormData we use fetch directly or bypass default headers
@@ -91,11 +96,29 @@ export default function SourceIngestion() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-background">
       <div className="max-w-2xl w-full p-6 bg-card border border-border rounded-lg shadow-sm">
-        <h1 className="text-2xl font-semibold mb-6 text-center">
+        <h1 className="text-2xl font-semibold mb-2 text-center">
           Source Ingestion & Validation
         </h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        {activeProject ? (
+          <div className="mb-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <FolderOpen className="w-4 h-4" />
+            <span>Active Project: </span>
+            <span className="font-semibold text-foreground">{activeProject.name}</span>
+            <Link href="/projects" className="ml-2 text-primary hover:underline">
+              (Change)
+            </Link>
+          </div>
+        ) : (
+          <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-500 rounded-md text-center">
+            <p className="mb-2">You must select an active project before ingesting sources.</p>
+            <Link href="/projects" className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90">
+              Select or Create Project
+            </Link>
+          </div>
+        )}
+        
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 ${!activeProject ? 'opacity-50 pointer-events-none' : ''}`}>
           {/* YouTube Form */}
           <div className="space-y-4">
             <h2 className="text-lg font-medium">YouTube URL</h2>
@@ -107,11 +130,11 @@ export default function SourceIngestion() {
                 onChange={(e) => setYoutubeUrl(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md"
                 required
-                disabled={loading}
+                disabled={loading || !activeProject}
               />
               <button
                 type="submit"
-                disabled={loading || !youtubeUrl}
+                disabled={loading || !youtubeUrl || !activeProject}
                 className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md disabled:opacity-50"
               >
                 {loading ? "Processing..." : "Ingest YouTube"}
@@ -129,11 +152,11 @@ export default function SourceIngestion() {
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
                 className="w-full px-3 py-2 border rounded-md"
                 required
-                disabled={loading}
+                disabled={loading || !activeProject}
               />
               <button
                 type="submit"
-                disabled={loading || !file}
+                disabled={loading || !file || !activeProject}
                 className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md disabled:opacity-50"
               >
                 {loading ? "Uploading..." : "Upload Local"}

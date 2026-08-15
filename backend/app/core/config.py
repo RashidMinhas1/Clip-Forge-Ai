@@ -13,10 +13,8 @@ class Settings(BaseSettings):
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
     
-    # Supabase Configuration
-    NEXT_PUBLIC_SUPABASE_URL: str = ""
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: str = ""
-    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    # Database Configuration
+    DATABASE_URL: str = "postgresql+asyncpg://clipforge:secret@localhost:5432/clipforge_dev"
 
     # Infrastructure Readiness checks
     REDIS_URL: str = "redis://localhost:6379/0"

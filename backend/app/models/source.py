@@ -1,16 +1,19 @@
+import uuid
 from typing import Optional, Literal
 from datetime import datetime, timezone
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, HttpUrl, Field, ConfigDict
 
 class SourceUploadRequest(BaseModel):
     pass  # Used for local uploads if additional metadata is needed
 
 class YouTubeIngestionRequest(BaseModel):
+    project_id: uuid.UUID = Field(..., description="The ID of the project to associate the source with")
     url: str = Field(..., description="The YouTube URL to ingest")
 
 class SourceMetadata(BaseModel):
-    source_id: str
+    id: uuid.UUID = Field(validation_alias="source_id", default_factory=uuid.uuid4)
     source_type: Literal["local", "youtube"]
+
     original_url: Optional[str] = None
     normalized_url: Optional[str] = None
     provider: Optional[str] = None
@@ -31,3 +34,5 @@ class SourceMetadata(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     error_code: Optional[str] = None
     error_message: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)

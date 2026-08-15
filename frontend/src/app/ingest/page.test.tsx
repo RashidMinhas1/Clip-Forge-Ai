@@ -11,21 +11,47 @@ vi.mock("@/lib/api-client", () => ({
 }));
 import { apiClient } from "@/lib/api-client";
 
+// Mock ProjectContext
+const mockUseProject = vi.fn();
+vi.mock("@/contexts/ProjectContext", () => ({
+  useProject: () => mockUseProject()
+}));
+
 describe("SourceIngestion Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn();
+    mockUseProject.mockReturnValue({
+      activeProject: { id: "proj-1", name: "Test Project" },
+      projects: [],
+      loading: false,
+      error: null,
+      setActiveProject: vi.fn(),
+      refreshProjects: vi.fn(),
+      createProject: vi.fn(),
+    });
   });
 
   afterEach(() => {
     cleanup();
   });
 
-  test("renders the ingestion UI correctly", () => {
+  test("renders the ingestion UI correctly when active project exists", () => {
     render(<SourceIngestion />);
     expect(screen.getByText("Source Ingestion & Validation")).toBeDefined();
+    expect(screen.getByText("Test Project")).toBeDefined();
     expect(screen.getByPlaceholderText("https://youtube.com/watch?v=...")).toBeDefined();
     expect(screen.getByText("Upload Local")).toBeDefined();
+  });
+
+  test("renders error message when no active project", () => {
+    mockUseProject.mockReturnValue({
+      activeProject: null,
+    });
+    render(<SourceIngestion />);
+    expect(screen.getByText("You must select an active project before ingesting sources.")).toBeDefined();
+    expect(screen.getByText("Select or Create Project")).toBeDefined();
+    expect(screen.getByPlaceholderText("https://youtube.com/watch?v=...")).toHaveProperty("disabled", true);
   });
 
   test("handles YouTube URL ingestion submission and success", async () => {
@@ -45,7 +71,7 @@ describe("SourceIngestion Page", () => {
 
     expect(apiClient).toHaveBeenCalledWith("/api/v1/sources/youtube", {
       method: "POST",
-      body: JSON.stringify({ url: "https://youtube.com/watch?v=123" })
+      body: JSON.stringify({ url: "https://youtube.com/watch?v=123", project_id: "proj-1" })
     });
 
     await waitFor(() => {
