@@ -11,10 +11,10 @@ class SourceRepository:
 
     async def create(self, project_id: uuid.UUID, metadata: SourceMetadata) -> Source:
         source_data = metadata.model_dump()
-        source_id_str = source_data.pop("source_id")
+        source_id = source_data.pop("id")
         
         source = Source(
-            id=uuid.UUID(source_id_str),
+            id=source_id,
             project_id=project_id,
             **source_data
         )
