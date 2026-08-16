@@ -5,6 +5,7 @@ from app.services.ai.exceptions import AIProviderError, AIAuthenticationError, A
 from app.services.ai.providers.openai import OpenAIProvider
 from app.services.ai.providers.openrouter import OpenRouterProvider
 from app.services.ai.providers.gemini import GeminiProvider
+from app.services.ai.providers.ollama import OllamaProvider
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,8 @@ class AIRouter:
         self.policy = settings.AI_ROUTING_POLICY
         self.providers = {}
         
+        if settings.OLLAMA_BASE_URL:
+            self.providers["ollama"] = OllamaProvider(settings.OLLAMA_BASE_URL)
         if settings.OPENAI_API_KEY:
             self.providers["openai"] = OpenAIProvider(settings.OPENAI_API_KEY)
         if settings.OPENROUTER_API_KEY:
@@ -22,12 +25,18 @@ class AIRouter:
 
     async def generate(self, req: AIRequest) -> AIResponse:
         if self.policy == "FREE_ONLY":
-            return await self._try_provider("gemini", req)
+            try:
+                return await self._try_provider("ollama", req)
+            except AIProviderError:
+                return await self._try_provider("gemini", req)
         elif self.policy == "FREE_FIRST":
             try:
-                return await self._try_provider("gemini", req)
+                return await self._try_provider("ollama", req)
             except AIProviderError:
-                return await self._try_provider("openrouter", req)
+                try:
+                    return await self._try_provider("gemini", req)
+                except AIProviderError:
+                    return await self._try_provider("openrouter", req)
         else: # NORMAL
             try:
                 return await self._try_provider("openai", req)
@@ -44,6 +53,8 @@ class AIRouter:
             provider_model = "gemini-1.5-flash"
         elif provider_name == "openai" and not provider_model.startswith("gpt"):
             provider_model = "gpt-4o-mini"
+        elif provider_name == "ollama":
+            provider_model = settings.OLLAMA_MODEL
             
         req_copy = req.model_copy()
         req_copy.model = provider_model
