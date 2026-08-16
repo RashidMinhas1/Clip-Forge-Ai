@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     WHISPER_COMPUTE_TYPE: str = "auto"
     TRANSCRIPTION_TIMEOUT: int = 300
     OPENAI_API_KEY: str = ""
+    OPENROUTER_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    AI_ROUTING_POLICY: str = "FREE_ONLY"
 
     model_config = SettingsConfigDict(
         env_file=".env",
