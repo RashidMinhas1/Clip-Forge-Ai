@@ -45,3 +45,45 @@ class Source(Base):
     error_message = Column(String, nullable=True)
 
     project = relationship("Project", back_populates="sources")
+    transcripts = relationship("Transcript", back_populates="source", cascade="all, delete-orphan")
+
+
+class Transcript(Base):
+    __tablename__ = "transcripts"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    source_id = Column(UUID(as_uuid=True), ForeignKey("sources.id", ondelete="CASCADE"), nullable=False, index=True)
+    status = Column(String, nullable=False, default="queued")  # queued, processing, completed, failed
+    language = Column(String, nullable=True)
+    duration = Column(Float, nullable=True)
+    model_used = Column(String, nullable=True)
+    error_message = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    
+    source = relationship("Source", back_populates="transcripts")
+    segments = relationship("TranscriptSegment", back_populates="transcript", cascade="all, delete-orphan", order_by="TranscriptSegment.segment_index")
+
+class TranscriptSegment(Base):
+    __tablename__ = "transcript_segments"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    transcript_id = Column(UUID(as_uuid=True), ForeignKey("transcripts.id", ondelete="CASCADE"), nullable=False, index=True)
+    segment_index = Column(Integer, nullable=False)
+    start_time = Column(Float, nullable=False)
+    end_time = Column(Float, nullable=False)
+    text = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    
+    transcript = relationship("Transcript", back_populates="segments")
+    words = relationship("TranscriptWord", back_populates="segment", cascade="all, delete-orphan", order_by="TranscriptWord.word_index")
+
+class TranscriptWord(Base):
+    __tablename__ = "transcript_words"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    segment_id = Column(UUID(as_uuid=True), ForeignKey("transcript_segments.id", ondelete="CASCADE"), nullable=False, index=True)
+    word_index = Column(Integer, nullable=False)
+    start_time = Column(Float, nullable=False)
+    end_time = Column(Float, nullable=False)
+    word = Column(String, nullable=False)
+    probability = Column(Float, nullable=True)
+    
+    segment = relationship("TranscriptSegment", back_populates="words")
