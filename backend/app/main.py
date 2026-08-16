@@ -11,6 +11,7 @@ from app.api.v1.health import router as health_router
 from app.api.v1.sources import router as sources_router
 from app.api.v1.projects import router as projects_router
 from app.api.v1.transcripts import router as transcripts_router
+from app.api.v1.clipping import router as clipping_router
 
 # Setup structured logging
 setup_logging(settings.LOG_LEVEL)
@@ -43,6 +44,7 @@ app.include_router(health_router, prefix="/api/v1")
 app.include_router(sources_router, prefix="/api/v1")
 app.include_router(projects_router, prefix="/api/v1")
 app.include_router(transcripts_router, prefix="/api/v1")
+app.include_router(clipping_router, prefix="/api/v1")
 
 # Global Exception Handler
 @app.exception_handler(Exception)
