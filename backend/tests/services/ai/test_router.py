@@ -19,10 +19,10 @@ async def test_router_free_only(mock_settings):
     req = AIRequest(messages=[{"role": "user", "content": "Hi"}], model="test")
     
     with patch.object(router, "_try_provider") as mock_try:
-        mock_try.return_value = AIResponse(content="Success", provider="gemini", model="gemini-1.5-flash", usage={}, latency=0.1)
+        mock_try.return_value = AIResponse(content="Success", provider="ollama", model="llama3", usage={}, latency=0.1)
         resp = await router.generate(req)
-        mock_try.assert_called_once_with("gemini", req)
-        assert resp.provider == "gemini"
+        mock_try.assert_called_once_with("ollama", req)
+        assert resp.provider == "ollama"
 
 @pytest.mark.asyncio
 async def test_router_fallback(mock_settings):

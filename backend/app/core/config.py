@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     OPENROUTER_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama3"
     AI_ROUTING_POLICY: str = "FREE_ONLY"
 
     model_config = SettingsConfigDict(
