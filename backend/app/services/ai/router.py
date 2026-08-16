@@ -63,3 +63,44 @@ class AIRouter:
         req_copy.model = provider_model
         
         return await provider.generate_text(req_copy)
+
+    async def generate_structured(self, req: AIRequest, schema: type) -> AIResponse:
+        if self.policy == "FREE_ONLY":
+            try:
+                return await self._try_provider_structured("ollama", req, schema)
+            except AIProviderError:
+                try:
+                    return await self._try_provider_structured("gemini", req, schema)
+                except AIProviderError:
+                    return await self._try_provider_structured("openrouter", req, schema)
+        elif self.policy == "FREE_FIRST":
+            try:
+                return await self._try_provider_structured("ollama", req, schema)
+            except AIProviderError:
+                try:
+                    return await self._try_provider_structured("gemini", req, schema)
+                except AIProviderError:
+                    return await self._try_provider_structured("openrouter", req, schema)
+        else: # NORMAL
+            try:
+                return await self._try_provider_structured("openai", req, schema)
+            except AIProviderError:
+                return await self._try_provider_structured("openrouter", req, schema)
+
+    async def _try_provider_structured(self, provider_name: str, req: AIRequest, schema: type) -> AIResponse:
+        provider = self.providers.get(provider_name)
+        if not provider:
+            raise AIProviderError(f"Provider {provider_name} not configured")
+        
+        provider_model = req.model
+        if provider_name == "gemini" and not provider_model.startswith("gemini"):
+            provider_model = "gemini-1.5-flash"
+        elif provider_name == "openai" and not provider_model.startswith("gpt"):
+            provider_model = "gpt-4o-mini"
+        elif provider_name == "ollama":
+            provider_model = settings.OLLAMA_MODEL
+            
+        req_copy = req.model_copy()
+        req_copy.model = provider_model
+        
+        return await provider.generate_structured(req_copy, schema)

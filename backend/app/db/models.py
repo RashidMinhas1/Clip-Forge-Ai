@@ -87,3 +87,38 @@ class TranscriptWord(Base):
     probability = Column(Float, nullable=True)
     
     segment = relationship("TranscriptSegment", back_populates="words")
+
+
+class ClipDiscoveryRun(Base):
+    __tablename__ = "clip_discovery_runs"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    source_id = Column(UUID(as_uuid=True), ForeignKey("sources.id", ondelete="CASCADE"), nullable=False, index=True)
+    status = Column(String, nullable=False, default="queued")  # queued, processing, completed, failed
+    error_message = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    project = relationship("Project")
+    source = relationship("Source")
+    candidates = relationship("ClipCandidate", back_populates="run", cascade="all, delete-orphan")
+
+
+class ClipCandidate(Base):
+    __tablename__ = "clip_candidates"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    run_id = Column(UUID(as_uuid=True), ForeignKey("clip_discovery_runs.id", ondelete="CASCADE"), nullable=False, index=True)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    title = Column(String, nullable=False)
+    hook = Column(String, nullable=False)
+    reason = Column(String, nullable=False)
+    start_time = Column(Float, nullable=False)
+    end_time = Column(Float, nullable=False)
+    duration = Column(Float, nullable=False)
+    score = Column(Float, nullable=False)
+    confidence = Column(Float, nullable=False)
+    transcript_excerpt = Column(String, nullable=False)
+    status = Column(String, nullable=False, default="pending_review")  # pending_review, approved, rejected
+
+    run = relationship("ClipDiscoveryRun", back_populates="candidates")
+    project = relationship("Project")
