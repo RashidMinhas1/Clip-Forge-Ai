@@ -28,7 +28,10 @@ class AIRouter:
             try:
                 return await self._try_provider("ollama", req)
             except AIProviderError:
-                return await self._try_provider("gemini", req)
+                try:
+                    return await self._try_provider("gemini", req)
+                except AIProviderError:
+                    return await self._try_provider("openrouter", req)
         elif self.policy == "FREE_FIRST":
             try:
                 return await self._try_provider("ollama", req)

@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     TRANSCRIPTION_TIMEOUT: int = 300
     OPENAI_API_KEY: str = ""
     OPENROUTER_API_KEY: str = ""
+    OPENROUTER_DISCOVERY_CACHE_TTL: int = 3600
     GEMINI_API_KEY: str = ""
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "llama3"
