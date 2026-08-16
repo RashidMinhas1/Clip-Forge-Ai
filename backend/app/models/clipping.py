@@ -29,6 +29,9 @@ class ClipCandidateCreate(BaseModel):
     confidence: float
     transcript_excerpt: str
 
+class ClipCandidateUpdate(BaseModel):
+    status: str
+
 class ClipCandidateResponse(BaseModel):
     id: UUID
     run_id: UUID

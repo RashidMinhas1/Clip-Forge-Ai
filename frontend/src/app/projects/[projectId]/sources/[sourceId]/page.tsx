@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { discoverClips, getClipDiscoveryStatus, type ClipCandidate } from '@/lib/api';
+import { discoverClips, getClipDiscoveryStatus, updateClipCandidateStatus, type ClipCandidate } from '@/lib/api';
+import { CandidateCard } from '@/components/CandidateCard';
 
 export default function SourcePage() {
   const params = useParams();
@@ -39,6 +40,15 @@ export default function SourcePage() {
     }
   };
 
+  const handleUpdateStatus = async (candidateId: string, candidateStatus: 'approved' | 'rejected') => {
+    try {
+      const updatedCandidate = await updateClipCandidateStatus(projectId, candidateId, candidateStatus);
+      setCandidates(prev => prev.map(c => c.id === candidateId ? updatedCandidate : c));
+    } catch (error) {
+      console.error('Failed to update status', error);
+    }
+  };
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Source Detail: {sourceId}</h1>
@@ -58,15 +68,7 @@ export default function SourcePage() {
 
         <div className="mt-8 grid grid-cols-1 gap-4">
           {candidates.map((clip) => (
-            <div key={clip.id} className="border p-4 rounded shadow">
-              <h3 className="font-bold text-lg">{clip.title}</h3>
-              <p className="italic text-gray-600 mb-2">&quot;{clip.hook}&quot;</p>
-              <p className="mb-2">{clip.transcript_excerpt}</p>
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>Score: {clip.score} (Confidence: {clip.confidence})</span>
-                <span>{clip.start_time} - {clip.end_time}</span>
-              </div>
-            </div>
+            <CandidateCard key={clip.id} clip={clip} onUpdateStatus={handleUpdateStatus} />
           ))}
         </div>
       </div>

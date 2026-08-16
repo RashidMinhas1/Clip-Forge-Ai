@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.repositories.clipping import ClippingRepository
-from app.models.clipping import ClipCandidateResponse, ClipDiscoveryRunResponse
+from app.models.clipping import ClipCandidateResponse, ClipDiscoveryRunResponse, ClipCandidateUpdate
 from app.tasks.clipping import task_discover_clips
 
 router = APIRouter(prefix="/projects", tags=["Clipping"])
@@ -54,5 +54,24 @@ async def list_clip_candidates(
     try:
         candidates = await repo.get_candidates_for_project(project_id)
         return candidates
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.patch("/{project_id}/candidates/{candidate_id}/status", response_model=ClipCandidateResponse)
+async def update_clip_candidate_status(
+    project_id: uuid.UUID,
+    candidate_id: uuid.UUID,
+    update_data: ClipCandidateUpdate,
+    repo: ClippingRepository = Depends(get_clipping_repo)
+):
+    if update_data.status not in ["approved", "rejected"]:
+        raise HTTPException(status_code=400, detail="Invalid status. Must be 'approved' or 'rejected'")
+    try:
+        candidate = await repo.update_candidate_status(candidate_id, project_id, update_data.status)
+        if not candidate:
+            raise HTTPException(status_code=404, detail="Candidate not found")
+        return candidate
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
