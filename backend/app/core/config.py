@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     # Infrastructure Readiness checks
     REDIS_URL: str = "redis://localhost:6379/0"
 
+    # Transcription Configuration
+    WHISPER_MODEL_SIZE: str = "small"
+    WHISPER_DEVICE: str = "auto"
+    WHISPER_COMPUTE_TYPE: str = "auto"
+    TRANSCRIPTION_TIMEOUT: int = 300
+    OPENAI_API_KEY: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
