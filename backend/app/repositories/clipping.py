@@ -49,3 +49,16 @@ class ClippingRepository:
         stmt = select(ClipCandidate).where(ClipCandidate.project_id == project_id)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
+
+    async def update_candidate_status(self, candidate_id: UUID, project_id: UUID, status: str) -> Optional[ClipCandidate]:
+        stmt = select(ClipCandidate).where(
+            ClipCandidate.id == candidate_id,
+            ClipCandidate.project_id == project_id
+        )
+        result = await self.session.execute(stmt)
+        candidate = result.scalars().first()
+        if candidate:
+            candidate.status = status
+            await self.session.commit()
+            await self.session.refresh(candidate)
+        return candidate
