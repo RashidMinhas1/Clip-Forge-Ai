@@ -51,3 +51,33 @@ async def get_render_job(
         raise HTTPException(status_code=404, detail="Render job not found")
         
     return job
+
+@router.post("/{job_id}/retry", response_model=RenderJobResponse, status_code=status.HTTP_202_ACCEPTED)
+async def retry_render_job(
+    job_id: UUID,
+    session: AsyncSession = Depends(get_db)
+):
+    stmt = select(RenderJob).where(RenderJob.id == job_id)
+    result = await session.execute(stmt)
+    job = result.scalars().first()
+    
+    if not job:
+        raise HTTPException(status_code=404, detail="Render job not found")
+        
+    if job.status not in ["failed", "cancelled", "completed"]:
+        raise HTTPException(status_code=400, detail="Can only retry failed, cancelled, or completed jobs")
+
+    # Reset job state
+    job.status = "queued"
+    job.progress = 0.0
+    job.error_message = None
+    job.completed_at = None
+    job.output_path = None
+    
+    await session.commit()
+    await session.refresh(job)
+
+    # Re-queue background task
+    await task_render_clip.kiq(str(job.id))
+
+    return job

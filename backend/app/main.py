@@ -42,6 +42,8 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 # Mount routers
+from app.api.v1.exports import router as exports_router
+
 app.include_router(health_router, prefix="/api/v1")
 app.include_router(sources_router, prefix="/api/v1")
 app.include_router(projects_router, prefix="/api/v1")
@@ -49,6 +51,7 @@ app.include_router(transcripts_router, prefix="/api/v1")
 app.include_router(clipping_router, prefix="/api/v1")
 app.include_router(captions_router, prefix="/api/v1")
 app.include_router(render_router, prefix="/api/v1")
+app.include_router(exports_router, prefix="/api/v1")
 
 # Root endpoint — keeps browser / health checks happy
 @app.get("/", include_in_schema=False)
