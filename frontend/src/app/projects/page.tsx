@@ -21,12 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-const navItems = [
-  { label: "Projects", icon: LayoutDashboard, href: "/projects", active: true },
-  { label: "Ingest Video", icon: Upload, href: "/ingest", active: false },
-  { label: "AI Clips", icon: Sparkles, href: "/ingest", active: false },
-  { label: "Pricing", icon: Zap, href: "/pricing", active: false },
-];
+// navItems moved into the component
 
 function StatCard({ icon: Icon, label, value, accent }: {
   icon: React.ElementType;
@@ -53,6 +48,14 @@ export default function ProjectsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [search, setSearch] = useState("");
+
+  const navItems = [
+    { label: "Projects", icon: LayoutDashboard, href: "/projects", active: true },
+    { label: "Ingest Video", icon: Upload, href: "/ingest", active: false },
+    { label: "AI Clips", icon: Sparkles, href: activeProject ? `/projects/${activeProject.id}` : "/projects", active: false },
+    { label: "Exports", icon: Film, href: activeProject ? `/projects/${activeProject.id}/exports` : "/projects", active: false },
+    { label: "Pricing", icon: Zap, href: "/pricing", active: false },
+  ];
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();

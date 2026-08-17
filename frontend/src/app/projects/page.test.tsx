@@ -35,11 +35,11 @@ describe("Projects Page", () => {
     });
 
     render(<ProjectsPage />);
-    expect(screen.getByText("Projects")).toBeDefined();
+    expect(screen.getAllByText("Projects").length).toBeGreaterThan(0);
     expect(screen.getByText("Alpha")).toBeDefined();
     expect(screen.getByText("Beta")).toBeDefined();
-    // Two Set Active buttons
-    expect(screen.getAllByText("Set Active").length).toBe(2);
+    // Two Activate buttons
+    expect(screen.getAllByText("Activate").length).toBe(2);
   });
 
   test("shows active project correctly", () => {
@@ -53,10 +53,10 @@ describe("Projects Page", () => {
     });
 
     render(<ProjectsPage />);
-    expect(screen.getByText("Active")).toBeDefined();
-    expect(screen.getByText("Open Project")).toBeDefined();
-    // One Set Active button for Beta
-    expect(screen.getAllByText("Set Active").length).toBe(1);
+    expect(screen.getAllByText("Active").length).toBeGreaterThan(0);
+    expect(screen.getByText("Open")).toBeDefined();
+    // One Activate button for Beta
+    expect(screen.getAllByText("Activate").length).toBe(1);
   });
 
   test("handles project creation", async () => {
@@ -71,10 +71,12 @@ describe("Projects Page", () => {
     });
 
     render(<ProjectsPage />);
-    const input = screen.getByPlaceholderText("Project Name...");
+    const openModalBtn = screen.getByText("Create project");
+    fireEvent.click(openModalBtn);
+    const input = screen.getByPlaceholderText("e.g. Podcast Season 2");
     fireEvent.change(input, { target: { value: "New Proj" } });
     
-    const button = screen.getByText("Create Project");
+    const button = screen.getByText("Create", { selector: 'button[type="submit"]' });
     fireEvent.click(button);
 
     expect(createProjectMock).toHaveBeenCalledWith("New Proj");
@@ -92,8 +94,8 @@ describe("Projects Page", () => {
     });
 
     render(<ProjectsPage />);
-    const button = screen.getByText("Set Active");
-    fireEvent.click(button);
+    const buttons = screen.getAllByText("Activate");
+    fireEvent.click(buttons[0]);
 
     expect(setActiveProjectMock).toHaveBeenCalledWith(mockProjects[0]);
   });
