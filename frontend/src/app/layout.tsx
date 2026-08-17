@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "AI-powered platform to transform long-form video content into short, caption-ready clips.",
 };
 
+import { AuthProvider } from "@/contexts/AuthContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,9 +19,11 @@ export default function RootLayout({
       <body className="antialiased min-h-screen flex flex-col">
         {/* Semantic accessibility defaults */}
         <header className="sr-only">ClipForge AI Application Header</header>
-        <ProjectProvider>
-          <main className="flex-1 flex flex-col">{children}</main>
-        </ProjectProvider>
+        <AuthProvider>
+          <ProjectProvider>
+            <main className="flex-1 flex flex-col">{children}</main>
+          </ProjectProvider>
+        </AuthProvider>
       </body>
     </html>
   );

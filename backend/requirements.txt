@@ -17,3 +17,7 @@ faster-whisper>=1.0.0
 openai>=1.0.0
 taskiq>=0.11.0
 taskiq-redis>=1.0.0
+passlib[bcrypt]
+python-jose[cryptography]
+pydantic
+python-multipart

@@ -7,6 +7,7 @@ from app.db.models import Source, Project
 from app.models.transcript import TranscriptResponse, TranscribeRequest
 from app.repositories.transcript import TranscriptRepository
 from app.tasks.transcription import task_transcribe_source
+from app.api.deps import get_authorized_project
 
 router = APIRouter(tags=["transcripts"])
 
@@ -15,7 +16,8 @@ async def transcribe_source(
     project_id: uuid.UUID,
     source_id: uuid.UUID,
     request: TranscribeRequest = None,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    project: Project = Depends(get_authorized_project)
 ):
     # Validate source belongs to project
     stmt = select(Source).where(Source.id == source_id, Source.project_id == project_id)
@@ -50,7 +52,8 @@ async def transcribe_source(
 async def get_transcript(
     project_id: uuid.UUID,
     source_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    project: Project = Depends(get_authorized_project)
 ):
     # Validate source belongs to project
     stmt = select(Source).where(Source.id == source_id, Source.project_id == project_id)

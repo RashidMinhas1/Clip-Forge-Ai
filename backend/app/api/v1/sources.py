@@ -11,6 +11,8 @@ from ...services.source.ingestion import SourceIngestionService
 from ...repositories.source import SourceRepository
 from ...db.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.api.deps import get_authorized_project
+from app.db.models import Project
 
 router = APIRouter(prefix="/sources", tags=["Sources"])
 
@@ -33,7 +35,8 @@ def get_ingestion_service(db: AsyncSession = Depends(get_db)) -> SourceIngestion
 async def ingest_local(
     project_id: uuid.UUID = Form(...),
     file: UploadFile = File(...),
-    service: SourceIngestionService = Depends(get_ingestion_service)
+    service: SourceIngestionService = Depends(get_ingestion_service),
+    project: Project = Depends(get_authorized_project)
 ) -> Any:
     """
     Ingests a local video file.
@@ -58,7 +61,8 @@ async def ingest_local(
 async def ingest_youtube(
     request: YouTubeIngestionRequest,
     project_id: uuid.UUID = Depends(lambda request: request.project_id),
-    service: SourceIngestionService = Depends(get_ingestion_service)
+    service: SourceIngestionService = Depends(get_ingestion_service),
+    project: Project = Depends(get_authorized_project)
 ) -> Any:
     """
     Ingests a YouTube URL.

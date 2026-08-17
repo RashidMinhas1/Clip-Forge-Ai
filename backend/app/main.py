@@ -14,6 +14,8 @@ from app.api.v1.transcripts import router as transcripts_router
 from app.api.v1.clipping import router as clipping_router
 from app.api.v1.captions import router as captions_router
 from app.api.v1.render import router as render_router
+from app.api.v1.auth import router as auth_router
+from app.middleware.security import SecurityHeadersMiddleware
 
 # Setup structured logging
 setup_logging(settings.LOG_LEVEL)
@@ -41,10 +43,13 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
+app.add_middleware(SecurityHeadersMiddleware)
+
 # Mount routers
 from app.api.v1.exports import router as exports_router
 
 app.include_router(health_router, prefix="/api/v1")
+app.include_router(auth_router, prefix="/api/v1")
 app.include_router(sources_router, prefix="/api/v1")
 app.include_router(projects_router, prefix="/api/v1")
 app.include_router(transcripts_router, prefix="/api/v1")

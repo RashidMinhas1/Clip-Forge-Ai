@@ -1,0 +1,35 @@
+# MS-015 Implementation Tasks
+
+- [x] **1. Database Models**
+  - [x] Add `User` model to `backend/app/db/models.py`
+  - [x] Add `AuditLog` model to `backend/app/db/models.py`
+  - [x] Add `user_id` (nullable) to `Project` model
+- [x] **2. Database Migration**
+  - [x] Generate Alembic migration for the new tables and column
+- [x] **3. Security Core & Middleware**
+  - [x] Implement `backend/app/core/security.py` (JWT, passwords)
+  - [x] Implement `backend/app/api/deps.py` (`get_current_user`)
+  - [x] Implement `backend/app/middleware/security.py` (Security headers, rate limiting)
+- [x] **4. Auth Endpoints**
+  - [x] Create `backend/app/api/v1/auth.py` (register, login, me)
+  - [x] Register auth router in `main.py`
+  - [x] Register security middleware in `main.py`
+- [x] **5. Project Ownership & Claiming**
+  - [x] Update `backend/app/repositories/project.py` (filter by `user_id`, atomic claim)
+  - [x] Update `backend/app/api/v1/projects.py` (enforce ownership, `/claim` endpoint)
+  - [x] Update other repos/endpoints to enforce ownership (via project relations)
+- [x] **6. Storage Cleanup Job**
+  - [x] Create `backend/app/tasks/cleanup.py`
+  - [x] Schedule via Taskiq
+- [x] **7. Frontend Implementation**
+  - [x] Create `frontend/src/contexts/AuthContext.tsx`
+  - [x] Update `frontend/src/lib/api-client.ts` to attach token
+  - [x] Create `frontend/src/app/login/page.tsx`
+  - [x] Protect project routes
+- [x] **8. Security Test Suite**
+  - [x] Create/Update backend tests for auth, ownership, claiming
+- [ ] **9. Verification & Commits**
+  - [ ] Run backend tests
+  - [ ] Run frontend tests, lint, build
+  - [ ] Generate Verification Report
+  - [ ] Commit, Push, PR, Merge, Lock
