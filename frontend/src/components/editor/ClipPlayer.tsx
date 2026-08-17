@@ -1,4 +1,6 @@
 import React, { useRef, useEffect } from 'react';
+import { CaptionOverlay } from './CaptionOverlay';
+import { CaptionChunk, CaptionConfig } from '@/hooks/useCaptions';
 
 interface ClipPlayerProps {
   videoUrl: string;
@@ -6,6 +8,8 @@ interface ClipPlayerProps {
   endTime: number;
   framingMode: string;
   onTimeUpdate?: (currentTime: number) => void;
+  chunks?: CaptionChunk[];
+  captionConfig?: CaptionConfig | null;
 }
 
 export const ClipPlayer: React.FC<ClipPlayerProps> = ({
@@ -13,9 +17,12 @@ export const ClipPlayer: React.FC<ClipPlayerProps> = ({
   startTime,
   endTime,
   framingMode,
-  onTimeUpdate
+  onTimeUpdate,
+  chunks = [],
+  captionConfig = null
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [internalTime, setInternalTime] = React.useState(0);
 
   // Handle loop between start and end time
   useEffect(() => {
@@ -23,6 +30,7 @@ export const ClipPlayer: React.FC<ClipPlayerProps> = ({
     if (!video) return;
 
     const handleTimeUpdate = () => {
+      setInternalTime(video.currentTime);
       if (onTimeUpdate) {
         onTimeUpdate(video.currentTime);
       }
@@ -94,6 +102,13 @@ export const ClipPlayer: React.FC<ClipPlayerProps> = ({
         muted
         playsInline
       />
+      {chunks.length > 0 && captionConfig && (
+        <CaptionOverlay 
+          chunks={chunks} 
+          config={captionConfig} 
+          currentTime={internalTime} 
+        />
+      )}
     </div>
   );
 };

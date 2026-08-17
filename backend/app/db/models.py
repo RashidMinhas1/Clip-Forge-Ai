@@ -123,3 +123,21 @@ class ClipCandidate(Base):
 
     run = relationship("ClipDiscoveryRun", back_populates="candidates")
     project = relationship("Project")
+    caption_config = relationship("ClipCaptionConfig", uselist=False, back_populates="clip", cascade="all, delete-orphan")
+
+
+class ClipCaptionConfig(Base):
+    __tablename__ = "clip_caption_configs"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    clip_id = Column(UUID(as_uuid=True), ForeignKey("clip_candidates.id", ondelete="CASCADE"), nullable=False, index=True)
+    preset_name = Column(String, nullable=False, default="tiktok_modern")
+    font_family = Column(String, nullable=True)
+    font_size = Column(Integer, nullable=True)
+    text_color = Column(String, nullable=True)
+    highlight_color = Column(String, nullable=True)
+    bg_color = Column(String, nullable=True)
+    is_rtl = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    clip = relationship("ClipCandidate", back_populates="caption_config")

@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useClipEditor } from '@/hooks/useClipEditor';
+import { useCaptions } from '@/hooks/useCaptions';
 import { ClipPlayer } from '@/components/editor/ClipPlayer';
 import { TimelineControls } from '@/components/editor/TimelineControls';
 import { FramingSelector } from '@/components/editor/FramingSelector';
+import { CaptionStylePanel } from '@/components/editor/CaptionStylePanel';
 import Link from 'next/link';
 
 export default function ClipEditorPage({ params }: { params: { projectId: string, clipId: string } }) {
@@ -14,16 +16,29 @@ export default function ClipEditorPage({ params }: { params: { projectId: string
   
   const {
     clip,
-    isLoading,
-    isSaving,
-    error,
+    isLoading: isClipLoading,
+    isSaving: isClipSaving,
+    error: clipError,
     startTime,
     endTime,
     framingMode,
     updateEdit
   } = useClipEditor(projectId, clipId);
 
+  const {
+    chunks,
+    config: captionConfig,
+    isLoading: isCaptionsLoading,
+    isSaving: isCaptionsSaving,
+    error: captionsError,
+    updateConfig
+  } = useCaptions(projectId, clipId);
+
   const [currentTime, setCurrentTime] = useState(0);
+
+  const isLoading = isClipLoading || isCaptionsLoading;
+  const isSaving = isClipSaving || isCaptionsSaving;
+  const error = clipError || captionsError;
 
   if (isLoading) {
     return (
@@ -96,6 +111,8 @@ export default function ClipEditorPage({ params }: { params: { projectId: string
               endTime={endTime}
               framingMode={framingMode}
               onTimeUpdate={setCurrentTime}
+              chunks={chunks}
+              captionConfig={captionConfig}
             />
           </div>
 
@@ -123,10 +140,17 @@ export default function ClipEditorPage({ params }: { params: { projectId: string
             </div>
           </div>
 
-          <div className="mb-8">
+          <div className="mb-8 pt-6 border-t">
             <FramingSelector 
               currentMode={framingMode}
               onChangeMode={(m) => updateEdit(startTime, endTime, m)}
+            />
+          </div>
+          
+          <div className="mb-8 pt-6 border-t">
+            <CaptionStylePanel
+              config={captionConfig}
+              onUpdate={updateConfig}
             />
           </div>
         </div>
