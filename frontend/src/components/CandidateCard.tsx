@@ -1,5 +1,6 @@
 import React from 'react';
 import { ClipCandidate } from '@/lib/api';
+import Link from 'next/link';
 
 interface CandidateCardProps {
   clip: ClipCandidate;
@@ -44,6 +45,14 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({ clip, onUpdateStat
         >
           Reject
         </button>
+        {clip.status === 'approved' && (
+          <Link 
+            href={`/projects/${clip.project_id}/clips/${clip.id}/edit`}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm transition-colors ml-auto flex items-center justify-center"
+          >
+            Edit Clip
+          </Link>
+        )}
       </div>
     </div>
   );
