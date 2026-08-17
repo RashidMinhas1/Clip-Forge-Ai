@@ -141,3 +141,20 @@ class ClipCaptionConfig(Base):
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
     clip = relationship("ClipCandidate", back_populates="caption_config")
+
+
+class RenderJob(Base):
+    __tablename__ = "render_jobs"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    clip_id = Column(UUID(as_uuid=True), ForeignKey("clip_candidates.id", ondelete="CASCADE"), nullable=False, index=True)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    status = Column(String, nullable=False, default="queued")  # queued, processing, completed, failed, cancelled
+    progress = Column(Float, nullable=False, default=0.0)
+    output_path = Column(String, nullable=True)
+    error_message = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+
+    clip = relationship("ClipCandidate")
+    project = relationship("Project")
