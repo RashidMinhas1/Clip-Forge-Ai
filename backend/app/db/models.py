@@ -119,6 +119,7 @@ class ClipCandidate(Base):
     confidence = Column(Float, nullable=False)
     transcript_excerpt = Column(String, nullable=False)
     status = Column(String, nullable=False, default="pending_review")  # pending_review, approved, rejected
+    framing_mode = Column(String, nullable=False, default="ORIGINAL")  # ORIGINAL, FACE_TRACK_9_16, SPLIT_SCREEN
 
     run = relationship("ClipDiscoveryRun", back_populates="candidates")
     project = relationship("Project")

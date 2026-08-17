@@ -62,3 +62,29 @@ class ClippingRepository:
             await self.session.commit()
             await self.session.refresh(candidate)
         return candidate
+
+    async def get_candidate(self, candidate_id: UUID, project_id: UUID) -> Optional[ClipCandidate]:
+        stmt = select(ClipCandidate).where(
+            ClipCandidate.id == candidate_id,
+            ClipCandidate.project_id == project_id
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().first()
+
+    async def update_candidate_edit(
+        self, candidate_id: UUID, project_id: UUID, start_time: float, end_time: float, framing_mode: str
+    ) -> Optional[ClipCandidate]:
+        stmt = select(ClipCandidate).where(
+            ClipCandidate.id == candidate_id,
+            ClipCandidate.project_id == project_id
+        )
+        result = await self.session.execute(stmt)
+        candidate = result.scalars().first()
+        if candidate:
+            candidate.start_time = start_time
+            candidate.end_time = end_time
+            candidate.duration = end_time - start_time
+            candidate.framing_mode = framing_mode
+            await self.session.commit()
+            await self.session.refresh(candidate)
+        return candidate

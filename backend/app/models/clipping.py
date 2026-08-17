@@ -32,6 +32,11 @@ class ClipCandidateCreate(BaseModel):
 class ClipCandidateUpdate(BaseModel):
     status: str
 
+class ClipEditUpdate(BaseModel):
+    start_time: float = Field(..., description="Adjusted start time in seconds")
+    end_time: float = Field(..., description="Adjusted end time in seconds")
+    framing_mode: str = Field(..., description="Framing mode e.g., ORIGINAL, FACE_TRACK_9_16, SPLIT_SCREEN")
+
 class ClipCandidateResponse(BaseModel):
     id: UUID
     run_id: UUID
@@ -46,6 +51,7 @@ class ClipCandidateResponse(BaseModel):
     confidence: float
     transcript_excerpt: str
     status: str
+    framing_mode: str
 
     class Config:
         orm_mode = True
