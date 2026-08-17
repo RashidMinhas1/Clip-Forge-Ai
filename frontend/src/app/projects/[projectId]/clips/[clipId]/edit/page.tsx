@@ -8,6 +8,7 @@ import { ClipPlayer } from '@/components/editor/ClipPlayer';
 import { TimelineControls } from '@/components/editor/TimelineControls';
 import { FramingSelector } from '@/components/editor/FramingSelector';
 import { CaptionStylePanel } from '@/components/editor/CaptionStylePanel';
+import { RenderButton } from '@/components/editor/RenderButton';
 import Link from 'next/link';
 
 export default function ClipEditorPage({ params }: { params: { projectId: string, clipId: string } }) {
@@ -90,6 +91,7 @@ export default function ClipEditorPage({ params }: { params: { projectId: string
               Saved
             </span>
           )}
+          <RenderButton clipId={clipId} />
           <button 
             onClick={() => router.push(`/projects/${projectId}`)}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
