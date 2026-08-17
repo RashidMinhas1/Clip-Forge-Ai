@@ -23,17 +23,16 @@ graph TD;
     MS005 --> MS006[MS-006 AI Provider Abstraction];
     MS006 --> MS007[MS-007 Ollama];
     MS006 --> MS008[MS-008 OpenRouter Free];
-    MS005 --> MS009[MS-009 Manual Clipping];
-    MS005 --> MS010[MS-010 AI Clipping];
-    MS010 --> MS011[MS-011 Clip Review];
-    MS011 --> MS012[MS-012 Editor & Framing];
-    MS012 --> MS013[MS-013 Caption Engine];
-    MS013 --> MS014[MS-014 Rendering];
-    MS014 --> MS015[MS-015 Export];
-    MS015 --> MS016[MS-016 Security Hardening];
-    MS002 --> MS017[MS-017 Testing Infra];
-    MS017 --> MS018[MS-018 MVP Verification];
-    MS018 --> MS019[MS-019 Post‑MVP Planning];
+    MS005 --> MS009[MS-009 AI Clipping];
+    MS009 --> MS010[MS-010 Clip Review];
+    MS010 --> MS011[MS-011 Editor & Framing];
+    MS011 --> MS012[MS-012 Caption Engine];
+    MS012 --> MS013[MS-013 Rendering];
+    MS013 --> MS014[MS-014 Export];
+    MS014 --> MS015[MS-015 Security Hardening];
+    MS002 --> MS016[MS-016 Testing Infra];
+    MS016 --> MS017[MS-017 MVP Verification];
+    MS017 --> MS018[MS-018 Post‑MVP Planning];
 ```
 
 ## 5. Detailed Milestones
@@ -63,44 +62,44 @@ graph TD;
 ### MS‑008 – OpenRouter Free Model Routing
 - Dynamic free‑model discovery, capability matching, pricing validation, retry/fallback, telemetry.
 
-### MS‑009 – Manual Clipping Engine
-- Silence‑aware target clipping (30/60/90 s) for both local and YouTube sources, intelligent boundary selection, extensive test matrix.
+### Deferred/Skipped Features
+- **Manual Clipping Engine**: Originally planned prior to AI Clip Discovery, but deferred/skipped. It does not alter the numbering of already-locked milestones.
 
-### MS‑010 – AI Clip Discovery & Vitality Scoring
+### MS‑009 – AI Clip Discovery & Vitality Scoring
 - Prompt design, multi‑dimensional scoring (hook, curiosity, emotional, value, standalone, payoff), explainable VitalityScore, duplicate avoidance.
 
-### MS‑011 – Clip Review & Selection UI
+### MS‑010 – Clip Review & Selection UI
 - Functional preview of AI candidates, vitality display, justification, actions (Approve / Regenerate / Cancel), persistent selection state.
 
-### MS‑012 – Lightweight Editor & Framing Engine
+### MS‑011 – Lightweight Editor & Framing Engine
 - Video preview, clip list, timing adjustments, undo/redo, framing modes (Face‑Track, Split‑Screen, Split + Gameplay, Split + Human Reaction, Original).
 
-### MS‑013 – Caption Engine
+### MS‑012 – Caption Engine
 - 60+ style presets, RTL support, live preview, per‑clip independent configuration, word‑highlight, visual emphasis.
 
-### MS‑014 – Rendering Pipeline
+### MS‑013 – Rendering Pipeline
 - Asynchronous FFmpeg rendering via Taskiq + Redis, state machine, output validation, temporary artifact cleanup.
 
-### MS‑015 – Export & Gallery
+### MS‑014 – Export & Gallery
 - Rendered clip gallery, download endpoints, metadata persistence, retry handling, UI integration.
 
-### MS‑016 – Security Hardening & Audit
+### MS‑015 – Security Hardening & Audit
 - Full auth/authorization, tenant isolation, rate limiting, CORS, security headers, secret management, file‑access safeguards, audit reporting.
 
-### MS‑017 – Testing Infrastructure & Cross‑Cutting Tests
+### MS‑016 – Testing Infrastructure & Cross‑Cutting Tests
 - Unit, API, integration, UI, E2E, media, AI, security, regression, performance suites; testing scaffolding extended throughout.
 
-### MS‑018 – End‑to‑End MVP Verification & Release
+### MS‑017 – End‑to‑End MVP Verification & Release
 - Real‑world workflow verification (dashboard → export) with functional, UI, backend, DB, AI, media, security, regression, performance checks; generate verification report.
 
-### MS‑019 – Post‑MVP Planning (Future Extensions)
+### MS‑018 – Post‑MVP Planning (Future Extensions)
 - Placeholder for advanced timeline, overlays, social publishing, paid‑provider fallback, etc.; planning only.
 
 ## 6. MVP Boundary
-Milestones 002 → 018 constitute the MVP. All core workflow steps are exercised with real media and no mock data.
+Milestones 002 → 017 constitute the MVP. All core workflow steps are exercised with real media and no mock data.
 
 ## 7. Post‑MVP Boundary
-Milestone 019 captures future extensions and is kept as a planning placeholder.
+Milestone 018 captures future extensions and is kept as a planning placeholder.
 
 ## 8. AI Architecture Roadmap
 - MS‑006 defines the router.
@@ -110,17 +109,17 @@ Milestone 019 captures future extensions and is kept as a planning placeholder
 
 ## 9. Media Architecture Roadmap
 - Ingestion and FFmpeg probing (MS‑003).
-- Rendering pipeline (MS‑014) with Taskiq + Redis.
+- Rendering pipeline (MS‑013) with Taskiq + Redis.
 - Validation of rendered assets.
 
 ## 10. Persistence Roadmap
 - Database foundation (MS‑004) and auto‑save mechanisms integrated into subsequent milestones.
 
 ## 11. Security Roadmap
-- Security embedded cross‑cutting; comprehensive hardening in MS‑016.
+- Security embedded cross‑cutting; comprehensive hardening in MS‑015.
 
 ## 12. Testing Roadmap
-- Testing foundation in MS‑002; per‑milestone tests; regression & performance in MS‑017; final MVP verification in MS‑018.
+- Testing foundation in MS‑002; per‑milestone tests; regression & performance in MS‑016; final MVP verification in MS‑017.
 
 ## 13. Risk Analysis
 | Risk Area | Mitigation |
@@ -128,9 +127,9 @@ Milestone 019 captures future extensions and is kept as a planning placeholder
 | YouTube ingestion failures | Robust yt-dlp error handling, clear user alerts (MS‑003). |
 | Long video transcription | Scalable faster‑whisper model selection, streaming processing (MS‑005). |
 | AI provider unavailability | FREE‑ONLY policy, fallback to other free models, explicit user notification (MS‑006‑008). |
-| Rendering large clips | Asynchronous queue, progress telemetry, resource limits (MS‑014). |
-| Security breaches | Cross‑cutting security checks, final audit (MS‑016). |
-| Test coverage gaps | Early testing scaffold, automated CI pipeline (MS‑002‑017). |
+| Rendering large clips | Asynchronous queue, progress telemetry, resource limits (MS‑013). |
+| Security breaches | Cross‑cutting security checks, final audit (MS‑015). |
+| Test coverage gaps | Early testing scaffold, automated CI pipeline (MS‑002‑016). |
 
 ## 14. Feature‑to‑Milestone Mapping
 (See **FEATURE_REGISTRY.md** for full table.)
@@ -139,7 +138,7 @@ Milestone 019 captures future extensions and is kept as a planning placeholder
 - Runtime & Infra (MS‑002) is prerequisite for all later work.
 - Source Ingestion (MS‑003) needed before Database (MS‑004) and Transcription (MS-005).
 - AI abstraction (MS‑006) must exist before any AI‑driven feature.
-- Security (MS‑016) and testing (MS‑017) are cross‑cutting and run alongside functional work.
+- Security (MS‑015) and testing (MS‑016) are cross‑cutting and run alongside functional work.
 
 ## 16. Acceptance Strategy
 Each milestone will produce:
@@ -156,7 +155,7 @@ Any deviation from this roadmap must be captured in a `change‑request‑X.md` 
 - [x] PRD v0.1.1 unchanged
 - [x] Foundation MS‑001 locked
 - [x] No fixed milestone‑count rule
-- [x] All milestones 002‑019 listed as PLANNED
+- [x] All milestones 002‑018 listed as PLANNED
 - [x] Cross‑cutting security & testing documented
 - [x] All PRD features mapped in FEATURE_REGISTRY.md
 - [x] No product code written
