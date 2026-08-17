@@ -46,6 +46,11 @@ app.include_router(projects_router, prefix="/api/v1")
 app.include_router(transcripts_router, prefix="/api/v1")
 app.include_router(clipping_router, prefix="/api/v1")
 
+# Root endpoint — keeps browser / health checks happy
+@app.get("/", include_in_schema=False)
+async def root():
+    return {"service": "ClipForge AI API", "status": "ok", "docs": "/docs"}
+
 # Global Exception Handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):

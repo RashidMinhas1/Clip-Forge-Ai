@@ -33,7 +33,9 @@ async def list_projects(
     try:
         return await service.list_projects()
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        import logging
+        logging.error(f"Error listing projects: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
 
 @router.get("/{project_id}", response_model=ProjectResponse)
 async def get_project(

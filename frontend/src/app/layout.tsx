@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body className="antialiased min-h-screen flex flex-col">
         {/* Semantic accessibility defaults */}
         <header className="sr-only">ClipForge AI Application Header</header>
