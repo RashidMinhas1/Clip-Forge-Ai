@@ -6,6 +6,8 @@ from app.db.database import get_db
 from app.repositories.clipping import ClippingRepository
 from app.models.clipping import ClipCandidateResponse, ClipDiscoveryRunResponse, ClipCandidateUpdate, ClipEditUpdate
 from app.tasks.clipping import task_discover_clips
+from app.api.deps import get_authorized_project
+from app.db.models import Project
 
 router = APIRouter(prefix="/projects", tags=["Clipping"])
 
@@ -16,7 +18,8 @@ def get_clipping_repo(db: AsyncSession = Depends(get_db)) -> ClippingRepository:
 async def create_clip_discovery(
     project_id: uuid.UUID,
     source_id: uuid.UUID,
-    repo: ClippingRepository = Depends(get_clipping_repo)
+    repo: ClippingRepository = Depends(get_clipping_repo),
+    project: Project = Depends(get_authorized_project)
 ):
     try:
         run = await repo.create_run(project_id, source_id)
@@ -31,7 +34,8 @@ async def get_clip_discovery_status(
     project_id: uuid.UUID,
     source_id: uuid.UUID,
     run_id: uuid.UUID,
-    repo: ClippingRepository = Depends(get_clipping_repo)
+    repo: ClippingRepository = Depends(get_clipping_repo),
+    project: Project = Depends(get_authorized_project)
 ):
     try:
         run = await repo.get_run(run_id, project_id)
@@ -49,7 +53,8 @@ async def get_clip_discovery_status(
 @router.get("/{project_id}/clip-candidates", response_model=List[ClipCandidateResponse])
 async def list_clip_candidates(
     project_id: uuid.UUID,
-    repo: ClippingRepository = Depends(get_clipping_repo)
+    repo: ClippingRepository = Depends(get_clipping_repo),
+    project: Project = Depends(get_authorized_project)
 ):
     try:
         candidates = await repo.get_candidates_for_project(project_id)
@@ -62,7 +67,8 @@ async def update_clip_candidate_status(
     project_id: uuid.UUID,
     candidate_id: uuid.UUID,
     update_data: ClipCandidateUpdate,
-    repo: ClippingRepository = Depends(get_clipping_repo)
+    repo: ClippingRepository = Depends(get_clipping_repo),
+    project: Project = Depends(get_authorized_project)
 ):
     if update_data.status not in ["approved", "rejected"]:
         raise HTTPException(status_code=400, detail="Invalid status. Must be 'approved' or 'rejected'")
@@ -80,7 +86,8 @@ async def update_clip_candidate_status(
 async def get_clip(
     project_id: uuid.UUID,
     clip_id: uuid.UUID,
-    repo: ClippingRepository = Depends(get_clipping_repo)
+    repo: ClippingRepository = Depends(get_clipping_repo),
+    project: Project = Depends(get_authorized_project)
 ):
     try:
         candidate = await repo.get_candidate(clip_id, project_id)
@@ -97,7 +104,8 @@ async def update_clip_edit(
     project_id: uuid.UUID,
     clip_id: uuid.UUID,
     update_data: ClipEditUpdate,
-    repo: ClippingRepository = Depends(get_clipping_repo)
+    repo: ClippingRepository = Depends(get_clipping_repo),
+    project: Project = Depends(get_authorized_project)
 ):
     # Validation: start_time must be < end_time
     if update_data.start_time >= update_data.end_time:

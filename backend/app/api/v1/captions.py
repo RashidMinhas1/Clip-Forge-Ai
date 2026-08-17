@@ -7,6 +7,7 @@ from app.db.database import get_db
 from app.db.models import ClipCandidate, Project
 from app.models.captions import ClipCaptionsResponse, CaptionConfigUpdate, CaptionConfigResponse
 from app.services.captions import get_clip_captions, update_caption_config
+from app.api.deps import get_authorized_project
 
 router = APIRouter(prefix="/projects", tags=["Captions"])
 
@@ -22,7 +23,8 @@ async def get_clip_for_project(db: AsyncSession, project_id: uuid.UUID, clip_id:
 async def get_captions(
     project_id: uuid.UUID,
     clip_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    project: Project = Depends(get_authorized_project)
 ):
     try:
         clip = await get_clip_for_project(db, project_id, clip_id)
@@ -38,7 +40,8 @@ async def patch_caption_config(
     project_id: uuid.UUID,
     clip_id: uuid.UUID,
     update_data: CaptionConfigUpdate,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    project: Project = Depends(get_authorized_project)
 ):
     try:
         clip = await get_clip_for_project(db, project_id, clip_id)

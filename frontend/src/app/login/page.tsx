@@ -1,62 +1,140 @@
-import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+'use client';
+
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute top-0 w-full h-full bg-hero-gradient opacity-40 pointer-events-none" />
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [error, setError] = useState('');
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    try {
+      const endpoint = isRegistering ? '/api/v1/auth/register' : '/api/v1/auth/login';
+      const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${endpoint}`;
       
-      <div className="w-full max-w-md bg-card p-8 rounded-2xl shadow-xl border border-border/50 relative z-10 flex flex-col items-center text-center">
-        
-        <div className="w-12 h-12 bg-brand-light rounded-xl flex items-center justify-center mb-6">
-          <Sparkles className="text-brand-purple w-6 h-6" />
-        </div>
-        
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome Back</h1>
-        <p className="text-muted-foreground mb-8">
-          Sign in to Clip Forge AI to continue crafting viral clips.
-        </p>
+      let response;
+      if (isRegistering) {
+        response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+      } else {
+        const formData = new URLSearchParams();
+        formData.append('username', email);
+        formData.append('password', password);
+        response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: formData,
+        });
+      }
 
-        {/* Placeholder form elements to make it look like a real login */}
-        <div className="w-full space-y-4 mb-8">
-          <div className="space-y-2 text-left">
-            <label className="text-sm font-medium text-foreground">Email</label>
-            <input 
-              type="email" 
-              placeholder="you@example.com" 
-              className="w-full px-4 py-3 bg-secondary/30 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
-              disabled
-            />
-          </div>
-          <div className="space-y-2 text-left">
-            <div className="flex justify-between">
-              <label className="text-sm font-medium text-foreground">Password</label>
-              <span className="text-sm text-brand-purple cursor-pointer hover:underline">Forgot?</span>
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || 'Authentication failed');
+      }
+
+      if (isRegistering) {
+        // Automatically login after register
+        setIsRegistering(false);
+        const formData = new URLSearchParams();
+        formData.append('username', email);
+        formData.append('password', password);
+        const loginResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData,
+        });
+        if (loginResponse.ok) {
+          const loginData = await loginResponse.json();
+          login(loginData.access_token);
+        }
+      } else {
+        const data = await response.json();
+        login(data.access_token);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            {isRegistering ? 'Create your account' : 'Sign in to your account'}
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="email-address" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-transparent"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
-            <input 
-              type="password" 
-              placeholder="••••••••" 
-              className="w-full px-4 py-3 bg-secondary/30 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple/50"
-              disabled
-            />
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-transparent"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
 
-        <Link 
-          href="/projects" 
-          className="w-full bg-brand-purple hover:bg-brand-purple/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md shadow-brand-purple/20 group"
-        >
-          Get Started
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </Link>
-        
-        <p className="mt-6 text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-brand-purple font-medium hover:underline">
-            Sign up
-          </Link>
-        </p>
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              {isRegistering ? 'Register' : 'Sign in'}
+            </button>
+          </div>
+          
+          <div className="text-center mt-4">
+            <button 
+              type="button" 
+              onClick={() => setIsRegistering(!isRegistering)}
+              className="text-sm text-blue-600 hover:text-blue-500"
+            >
+              {isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Register"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -8,23 +8,19 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.db.database import get_db
-from app.db.models import RenderJob, ClipCandidate, Project
+from app.db.models import RenderJob, ClipCandidate, Project, User
 from app.models.render import RenderJobResponse
 from app.services.export import ExportService
+from app.api.deps import get_authorized_project, get_current_user
 
 router = APIRouter(prefix="", tags=["Exports"])
 
 @router.get("/projects/{project_id}/exports", response_model=List[RenderJobResponse])
 async def list_exports(
     project_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db)
+    session: AsyncSession = Depends(get_db),
+    project: Project = Depends(get_authorized_project)
 ):
-    # Verify project exists
-    stmt = select(Project).where(Project.id == project_id)
-    result = await session.execute(stmt)
-    if not result.scalars().first():
-        raise HTTPException(status_code=404, detail="Project not found")
-
     # Fetch completed and failed render jobs
     stmt = select(RenderJob).where(
         RenderJob.project_id == project_id,
@@ -38,7 +34,8 @@ async def list_exports(
 @router.get("/exports/{job_id}/download/video")
 async def download_video(
     job_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db)
+    session: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     stmt = select(RenderJob).where(RenderJob.id == job_id)
     result = await session.execute(stmt)
@@ -46,6 +43,12 @@ async def download_video(
 
     if not job:
         raise HTTPException(status_code=404, detail="Export not found")
+        
+    stmt = select(Project).where(Project.id == job.project_id)
+    result = await session.execute(stmt)
+    project = result.scalars().first()
+    if not project or project.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
     if job.status != "completed":
         raise HTTPException(status_code=400, detail="Export is not completed")
     if not job.output_path or not os.path.exists(job.output_path):
@@ -63,7 +66,8 @@ async def download_video(
 async def download_captions(
     job_id: uuid.UUID,
     format: str = "srt",
-    session: AsyncSession = Depends(get_db)
+    session: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     stmt = select(RenderJob).where(RenderJob.id == job_id)
     result = await session.execute(stmt)
@@ -71,6 +75,12 @@ async def download_captions(
 
     if not job:
         raise HTTPException(status_code=404, detail="Export not found")
+        
+    stmt = select(Project).where(Project.id == job.project_id)
+    result = await session.execute(stmt)
+    project = result.scalars().first()
+    if not project or project.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
 
     stmt = select(ClipCandidate).where(ClipCandidate.id == job.clip_id)
     result = await session.execute(stmt)
