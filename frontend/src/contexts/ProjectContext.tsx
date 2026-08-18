@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Project, projectApi } from "@/lib/api/projectClient";
 
 interface ProjectContextType {
@@ -79,7 +80,15 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const { token, isLoading: authLoading } = useAuth();
+
   const refreshProjects = async () => {
+    if (!token) {
+      setProjects([]);
+      setActiveProjectState(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const data = await fetchProjects();
     await loadActiveProject(data);
@@ -87,9 +96,11 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    refreshProjects();
+    if (!authLoading) {
+      refreshProjects();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [token, authLoading]);
 
   return (
     <ProjectContext.Provider

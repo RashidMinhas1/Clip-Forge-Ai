@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
-export default function ClaimProjectPage({ params }: { params: { id: string } }) {
+export default function ClaimProjectPage({ params }: { params: { projectId: string } }) {
   const [status, setStatus] = useState<'idle' | 'claiming' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const { user } = useAuth();
@@ -15,12 +15,12 @@ export default function ClaimProjectPage({ params }: { params: { id: string } })
     setStatus('claiming');
     setErrorMessage('');
     try {
-      await apiClient(`/api/v1/projects/${params.id}/claim`, {
+      await apiClient(`/api/v1/projects/${params.projectId}/claim`, {
         method: 'POST',
       });
       setStatus('success');
       setTimeout(() => {
-        router.push(`/projects/${params.id}`);
+        router.push(`/projects/${params.projectId}`);
       }, 1500);
     } catch (error: any) {
       setStatus('error');
