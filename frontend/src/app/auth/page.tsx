@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Loader2, Scissors, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export default function AuthPage() {
+function AuthPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultMode = searchParams.get("mode") === "login" ? "login" : "signup";
@@ -163,5 +163,15 @@ export default function AuthPage() {
 
       </div>
     </div>
+  );
+}
+
+import { Suspense } from 'react';
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-[#5B21FF]" /></div>}>
+      <AuthPageContent />
+    </Suspense>
   );
 }

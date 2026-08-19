@@ -139,7 +139,7 @@ export default function SourceIngestion() {
                 disabled={loading || !youtubeUrl || !activeProject}
                 className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md disabled:opacity-50"
               >
-                {loading ? "Processing..." : "Ingest YouTube"}
+                {loading ? "Processing..." : "Insert YouTube"}
               </button>
             </form>
           </div>

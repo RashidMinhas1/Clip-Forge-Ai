@@ -53,11 +53,12 @@ export default function ProjectsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [search, setSearch] = useState("");
 
   const navItems = [
     { label: "Projects", icon: LayoutDashboard, href: "/projects", active: true },
-    { label: "Ingest Video", icon: Upload, href: "/ingest", active: false },
+    { label: "Insert Video", icon: Upload, href: "/ingest", active: false },
     { label: "AI Clips", icon: Sparkles, href: activeProject ? `/projects/${activeProject.id}` : "/projects", active: false },
     { label: "Exports", icon: Film, href: activeProject ? `/projects/${activeProject.id}/exports` : "/projects", active: false },
     { label: "Pricing", icon: Zap, href: "/pricing", active: false },
@@ -128,9 +129,47 @@ export default function ProjectsPage() {
         </div>
 
         {/* User Profile */}
-        <div className="p-3 border-t border-[#E2E8F0]">
+        <div className="p-3 border-t border-[#E2E8F0] relative">
+          {showProfileMenu && (
+            <>
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setShowProfileMenu(false)}
+              />
+              <div className="absolute bottom-full left-3 w-[calc(100%-24px)] mb-2 bg-white border border-[#E2E8F0] rounded-lg shadow-lg py-1 z-50">
+                <div className="px-3 py-2 border-b border-[#E2E8F0] mb-1">
+                  <p className="text-xs font-semibold text-[#0F172A] truncate">
+                    {user?.user_metadata?.full_name || "User Account"}
+                  </p>
+                  <p className="text-[10px] text-[#64748B] truncate">
+                    {user?.email || ""}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    setShowSettingsModal(true);
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-xs text-[#0F172A] hover:bg-[#F8FAFC] transition-colors flex items-center gap-2"
+                >
+                  <UserCircle className="w-3.5 h-3.5" />
+                  Manage Settings
+                </button>
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    logout();
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-xs text-[#EF4444] hover:bg-[#FEF2F2] transition-colors flex items-center gap-2"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Sign Out
+                </button>
+              </div>
+            </>
+          )}
           <button
-            onClick={() => setShowSettingsModal(true)}
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="w-full text-left bg-[#F8FAFC] border border-[#E2E8F0] rounded-md p-3 flex items-center gap-3 hover:border-[#C4B5FD] hover:bg-white transition-colors group"
           >
             <div className="w-8 h-8 rounded-full bg-[#5B21FF] text-white flex items-center justify-center text-sm font-bold shrink-0">
@@ -168,7 +207,7 @@ export default function ProjectsPage() {
           {error && (
             <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
               <X className="w-4 h-4 shrink-0" />
-              Backend not reachable — start the server on port 8000 to load projects.
+              {error}
             </div>
           )}
 
@@ -183,7 +222,7 @@ export default function ProjectsPage() {
           {/* Quick actions */}
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { title: "Ingest from YouTube", desc: "Paste a URL — we handle the download and validation.", icon: Video,    accent: "#5B21FF", href: "/ingest" },
+              { title: "Insert from YouTube", desc: "Paste a URL — we handle the download and validation.", icon: Video,    accent: "#5B21FF", href: "/ingest" },
               { title: "Upload Local File",   desc: "MP4, MOV, MKV or WebM directly from your drive.",    icon: Upload,   accent: "#EA580C", href: "/ingest" },
               { title: "AI Clip Discovery",   desc: "Score & rank candidate clips with your LLM of choice.", icon: Sparkles, accent: "#DB2777", href: "/ingest" },
             ].map((item) => (

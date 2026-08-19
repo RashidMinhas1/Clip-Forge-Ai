@@ -30,7 +30,9 @@ async def get_current_user(
         email: str = payload.get("email")
         if user_id is None:
             raise credentials_exception
-    except JWTError:
+    except JWTError as e:
+        import logging
+        logging.error(f"JWT verification failed: {e}")
         raise credentials_exception
 
     import uuid
@@ -56,8 +58,10 @@ async def get_current_user(
             db.add(user)
             await db.commit()
             await db.refresh(user)
-        except Exception:
+        except Exception as e:
             await db.rollback()
+            import logging
+            logging.error(f"User auto-create failed: {e}")
             raise credentials_exception
             
     return user

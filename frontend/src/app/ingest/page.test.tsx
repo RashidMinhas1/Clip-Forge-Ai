@@ -66,7 +66,7 @@ describe("SourceIngestion Page", () => {
     const input = screen.getByPlaceholderText("https://youtube.com/watch?v=...");
     fireEvent.change(input, { target: { value: "https://youtube.com/watch?v=123" } });
     
-    const button = screen.getByText("Ingest YouTube");
+    const button = screen.getByText("Insert YouTube");
     fireEvent.click(button);
 
     expect(apiClient).toHaveBeenCalledWith("/api/v1/sources/youtube", {
