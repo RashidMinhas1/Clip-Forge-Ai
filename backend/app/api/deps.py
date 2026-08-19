@@ -20,9 +20,14 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        secret_key = settings.SECRET_KEY if hasattr(settings, 'SECRET_KEY') else "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-        payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+        secret_key = settings.SUPABASE_JWT_SECRET
+        if not secret_key:
+            raise credentials_exception
+            
+        # Supabase uses audience 'authenticated' by default
+        payload = jwt.decode(token, secret_key, algorithms=["HS256"], audience="authenticated")
         user_id: str = payload.get("sub")
+        email: str = payload.get("email")
         if user_id is None:
             raise credentials_exception
     except JWTError:
@@ -30,8 +35,25 @@ async def get_current_user(
 
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalars().first()
+    
     if user is None:
-        raise credentials_exception
+        import uuid
+        from datetime import datetime, timezone
+        # Auto-create user from Supabase session
+        try:
+            user = User(
+                id=uuid.UUID(user_id) if isinstance(user_id, str) else user_id,
+                email=email or f"{user_id}@placeholder.com",
+                is_active=True,
+                created_at=datetime.now(timezone.utc)
+            )
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+        except Exception:
+            await db.rollback()
+            raise credentials_exception
+            
     return user
 
 async def get_current_active_user(

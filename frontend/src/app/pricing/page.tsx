@@ -44,7 +44,7 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Link
-                href="/signup"
+                href="/auth?mode=signup"
                 className="btn-secondary w-full justify-center text-sm py-2.5"
               >
                 Get Started Free
@@ -77,7 +77,7 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Link
-                href="/signup"
+                href="/auth?mode=signup"
                 className="btn-primary w-full justify-center text-sm py-2.5"
               >
                 Start Pro Trial
@@ -107,7 +107,7 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Link
-                href="/signup"
+                href="/auth?mode=signup"
                 className="btn-secondary w-full justify-center text-sm py-2.5"
               >
                 Contact Sales

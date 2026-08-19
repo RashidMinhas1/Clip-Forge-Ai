@@ -2,18 +2,12 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import apiClient from '@/lib/api-client';
-
-interface User {
-  id: string;
-  email: string;
-  is_active: bool;
-}
+import { supabase } from '@/lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string) => void;
   logout: () => void;
   isLoading: boolean;
 }
@@ -28,55 +22,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check localStorage on load
-    const storedToken = localStorage.getItem('access_token');
-    if (storedToken) {
-      setToken(storedToken);
-      fetchUser(storedToken);
-    } else {
+    const publicRoutes = ['/', '/auth', '/pricing'];
+
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      setToken(session?.access_token ?? null);
       setIsLoading(false);
-      if (pathname !== '/login') {
-        router.push('/login');
+      
+      if (!session && !publicRoutes.includes(pathname)) {
+        router.push('/auth?mode=login');
       }
-    }
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+        setToken(session?.access_token ?? null);
+        setIsLoading(false);
+        
+        if (!session && !publicRoutes.includes(pathname)) {
+          router.push('/auth?mode=login');
+        } else if (session && (pathname === '/auth')) {
+          router.push('/projects');
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, [pathname, router]);
 
-  const fetchUser = async (authToken: string) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${authToken}`
-        }
-      });
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-      } else {
-        logout();
-      }
-    } catch (error) {
-      logout();
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const login = (newToken: string) => {
-    localStorage.setItem('access_token', newToken);
-    setToken(newToken);
-    fetchUser(newToken);
-    router.push('/');
-  };
-
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    setToken(null);
-    setUser(null);
-    router.push('/login');
+  const logout = async () => {
+    await supabase.auth.signOut();
+    router.push('/auth?mode=login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

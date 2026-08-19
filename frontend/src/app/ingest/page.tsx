@@ -68,7 +68,9 @@ export default function SourceIngestion() {
 
     try {
       // apiClient stringifies objects, so for FormData we use fetch directly or bypass default headers
-      const token = localStorage.getItem("auth_token");
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || null;
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/sources/local`, {
         method: "POST",
         body: formData,

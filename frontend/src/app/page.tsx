@@ -36,7 +36,7 @@ export default function LandingPage() {
               />
             </div>
             <Link
-              href="/projects"
+              href="/auth?mode=signup"
               className="btn-primary rounded-none rounded-r-xl py-3.5 px-6 text-sm font-semibold whitespace-nowrap"
             >
               Get Started
@@ -130,7 +130,7 @@ export default function LandingPage() {
               Join creators turning long-form video into months of social content — automatically.
             </p>
             <Link
-              href="/projects"
+              href="/auth?mode=signup"
               className="inline-flex items-center gap-2 bg-[#5B21FF] hover:bg-[#4c1aee] text-white text-sm font-semibold px-6 py-3 rounded-lg border border-[#4c1aee] transition-colors"
             >
               Start for Free

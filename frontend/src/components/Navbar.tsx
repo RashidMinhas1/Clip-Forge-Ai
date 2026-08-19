@@ -26,13 +26,13 @@ export function Navbar() {
           {/* Auth actions */}
           <div className="flex items-center gap-3">
             <Link
-              href="/login"
+              href="/auth?mode=login"
               className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors font-medium"
             >
               Sign in
             </Link>
             <Link
-              href="/signup"
+              href="/auth?mode=signup"
               className="btn-primary text-sm py-1.5 px-4"
             >
               Sign up free

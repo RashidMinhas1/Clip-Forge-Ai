@@ -14,7 +14,9 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
     
     # Database Configuration
-    DATABASE_URL: str = "postgresql+asyncpg://clipforge:secret@localhost:5432/clipforge_dev"
+    DATABASE_URL: str = "sqlite+aiosqlite:///clipforge.db"
+    SUPABASE_URL: str = ""
+    SUPABASE_JWT_SECRET: str = ""
 
     # Infrastructure Readiness checks
     REDIS_URL: str = "redis://localhost:6379/0"

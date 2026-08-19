@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useProject } from "@/contexts/ProjectContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   PlusCircle,
   Loader2,
@@ -18,8 +19,11 @@ import {
   Film,
   Search,
   X,
+  LogOut,
+  UserCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { SettingsModal } from "@/components/SettingsModal";
 
 // navItems moved into the component
 
@@ -44,9 +48,11 @@ function StatCard({ icon: Icon, label, value, accent }: {
 
 export default function ProjectsPage() {
   const { projects, activeProject, loading, error, createProject, setActiveProject } = useProject();
+  const { user, logout } = useAuth();
   const [newProjectName, setNewProjectName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [search, setSearch] = useState("");
 
   const navItems = [
@@ -119,6 +125,24 @@ export default function ProjectsPage() {
               <p className="text-xs text-[#94A3B8]">No active project</p>
             </div>
           )}
+        </div>
+
+        {/* User Profile */}
+        <div className="p-3 border-t border-[#E2E8F0]">
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="w-full text-left bg-[#F8FAFC] border border-[#E2E8F0] rounded-md p-3 flex items-center gap-3 hover:border-[#C4B5FD] hover:bg-white transition-colors group"
+          >
+            <div className="w-8 h-8 rounded-full bg-[#5B21FF] text-white flex items-center justify-center text-sm font-bold shrink-0">
+              {user?.user_metadata?.full_name ? user.user_metadata.full_name[0].toUpperCase() : (user?.email ? user.email[0].toUpperCase() : <UserCircle className="w-5 h-5" />)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-[#0F172A] truncate group-hover:text-[#5B21FF] transition-colors">
+                {user?.user_metadata?.full_name || user?.email || "User Account"}
+              </p>
+              <p className="text-[10px] text-[#64748B] truncate">Manage settings</p>
+            </div>
+          </button>
         </div>
       </aside>
 
