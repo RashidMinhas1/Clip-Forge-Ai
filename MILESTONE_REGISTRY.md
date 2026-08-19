@@ -23,8 +23,8 @@
 | **MS-012** | Caption Engine | 60+ style presets, RTL support, live preview, per‑clip independent configuration, word‑highlight, visual emphasis. | **PLANNED** | `milestone/012-captions` |
 | **MS-013** | Rendering Pipeline | Asynchronous FFmpeg render via Taskiq + Redis, state machine (QUEUED → PROCESSING → COMPLETED / FAILED / CANCELLED), output validation, temporary artifact cleanup. | **PLANNED** | `milestone/013-rendering` |
 | **MS-014** | Export & Gallery | Rendered clip gallery, download endpoints, metadata persistence, retry handling, UI integration. | **PLANNED** | `milestone/014-export` |
-| **MS-015** | Security Hardening & Audit | Full authentication/authorization, tenant isolation, rate limiting, CORS, security headers, secret management, file‑access safeguards, audit reporting. | **PLANNED** | `milestone/015-security` |
-| **MS-016** | Testing Infrastructure & Cross‑Cutting Tests | Unit, API, integration, UI, E2E, media, AI, security, regression, performance suites; test scaffolding established early (MS‑002) and extended throughout. | **PLANNED** | `milestone/016-testing` |
+| **MS-015** | Security Hardening & Audit | Full authentication/authorization, tenant isolation, rate limiting, CORS, security headers, secret management, file‑access safeguards, audit reporting. | **COMPLETED & LOCKED** | `milestone/015-security` |
+| **MS-016** | Testing Infrastructure & Cross‑Cutting Tests | Unit, API, integration, UI, E2E, media, AI, security, regression, performance suites; test scaffolding established early (MS‑002) and extended throughout. | **COMPLETED & LOCKED** | `milestone/016-testing` |
 | **MS-017** | End‑to‑End MVP Verification & Release | Complete real‑world workflow verification (dashboard → export) with functional, UI, backend, DB, AI, media, security, regression, performance checks; generate verification report. | **PLANNED** | `milestone/017-mvp-verification` |
 | **MS-018** | Post‑MVP Planning (Future Extensions) | Placeholder for future multi‑track editor, overlays, social publishing, paid‑provider fallback, advanced media effects; planning only, no implementation. | **PLANNED** | `milestone/018-post-mvp` |
 
