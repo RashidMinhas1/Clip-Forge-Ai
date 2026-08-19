@@ -22,6 +22,11 @@ vi.mock('@/lib/supabase', () => ({
   },
 }));
 
+// Mock apiClient
+vi.mock('@/lib/api-client', () => ({
+  apiClient: vi.fn().mockResolvedValue({ activated: true }),
+}));
+
 // Dummy component to consume the context
 const TestComponent = () => {
   const { user, isLoading, logout } = useAuth();

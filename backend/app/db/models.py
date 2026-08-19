@@ -11,6 +11,8 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, index=True, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
+    app_activated = Column(Boolean, default=False, nullable=False)
+    activated_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     projects = relationship("Project", back_populates="user")

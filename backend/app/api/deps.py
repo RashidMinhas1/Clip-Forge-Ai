@@ -73,10 +73,17 @@ async def get_current_active_user(
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
+async def get_activated_user(
+    current_user: User = Depends(get_current_active_user),
+) -> User:
+    if not current_user.app_activated:
+        raise HTTPException(status_code=403, detail="Application activation required")
+    return current_user
+
 async def get_authorized_project(
     project_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_activated_user)
 ):
     from app.db.models import Project
     import uuid

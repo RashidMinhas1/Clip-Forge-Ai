@@ -25,7 +25,7 @@ async def override_get_db():
         yield session
 
 async def override_get_current_user():
-    return User(id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"), email="test@test.com", is_active=True)
+    return User(id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"), email="test@test.com", is_active=True, app_activated=True)
 
 app.dependency_overrides[get_current_user] = override_get_current_user
 app.dependency_overrides[get_db] = override_get_db
@@ -53,7 +53,7 @@ async def db_session():
 
 @pytest_asyncio.fixture
 async def current_user(db_session):
-    user = User(id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"), email="test@test.com", is_active=True)
+    user = User(id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"), email="test@test.com", is_active=True, app_activated=True)
     db_session.add(user)
     await db_session.commit()
     return user

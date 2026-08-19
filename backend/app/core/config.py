@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///clipforge.db"
     SUPABASE_URL: str = ""
     SUPABASE_JWT_SECRET: str = ""
+    ACTIVATION_KEY: str = ""
 
     # Infrastructure Readiness checks
     REDIS_URL: str = "redis://localhost:6379/0"
