@@ -1,21 +1,24 @@
 import pytest
 from httpx import AsyncClient
+from unittest.mock import patch, AsyncMock
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.models import Project, Source, ClipDiscoveryRun, ClipCandidate, Transcript, TranscriptSegment, TranscriptWord, RenderJob
 import uuid
 import os
 
 @pytest.fixture
-async def setup_export_data(db_session: AsyncSession):
-    project = Project(name="Test Project")
+async def setup_export_data(db_session: AsyncSession, current_user):
+    project = Project(name="Test Project", user_id=current_user.id)
     db_session.add(project)
     await db_session.commit()
     await db_session.refresh(project)
 
     source = Source(
         project_id=project.id,
-        url="https://youtube.com/watch?v=123",
-        status="completed",
+        original_url="https://youtube.com/watch?v=123",
+        ingestion_status="completed",
+        validation_status="valid",
+        source_type="youtube",
         title="Test Source",
         duration=100
     )
@@ -24,6 +27,7 @@ async def setup_export_data(db_session: AsyncSession):
     await db_session.refresh(source)
 
     run = ClipDiscoveryRun(
+        project_id=project.id,
         source_id=source.id,
         status="completed"
     )
@@ -36,9 +40,13 @@ async def setup_export_data(db_session: AsyncSession):
         project_id=project.id,
         start_time=10.0,
         end_time=20.0,
+        duration=10.0,
         title="Test Clip",
         score=9.0,
-        explanation="Test explanation",
+        confidence=0.9,
+        hook="Hook",
+        transcript_excerpt="Excerpt",
+        reason="Test reason",
         status="approved"
     )
     db_session.add(clip)
@@ -84,7 +92,8 @@ async def setup_export_data(db_session: AsyncSession):
     await db_session.commit()
 
     # Create dummy output file
-    output_path = f"/tmp/test_output_{uuid.uuid4()}.mp4"
+    import tempfile
+    output_path = f"{tempfile.gettempdir()}/test_output_{uuid.uuid4()}.mp4"
     with open(output_path, "w") as f:
         f.write("dummy video data")
 
@@ -144,7 +153,8 @@ async def test_download_captions(async_client: AsyncClient, setup_export_data):
         os.remove(output_path)
 
 @pytest.mark.asyncio
-async def test_retry_render(async_client: AsyncClient, setup_export_data):
+@patch("app.api.v1.render.task_render_clip.kiq", new_callable=AsyncMock)
+async def test_retry_render(mock_kiq, async_client: AsyncClient, setup_export_data):
     project, job, output_path = setup_export_data
     
     response = await async_client.post(f"/api/v1/renders/{job.id}/retry")
@@ -152,6 +162,7 @@ async def test_retry_render(async_client: AsyncClient, setup_export_data):
     data = response.json()
     assert data["status"] == "queued"
     assert data["progress"] == 0.0
+    mock_kiq.assert_called_once()
     
     if os.path.exists(output_path):
         os.remove(output_path)

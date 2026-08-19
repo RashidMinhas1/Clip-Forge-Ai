@@ -4,8 +4,8 @@ from httpx import AsyncClient
 from app.db.models import Project, Source, ClipDiscoveryRun, ClipCandidate
 
 @pytest.fixture
-async def sample_project(db_session):
-    project = Project(name="Test Project", status="active")
+async def sample_project(db_session, current_user):
+    project = Project(name="Test Project", status="active", user_id=current_user.id)
     db_session.add(project)
     await db_session.commit()
     await db_session.refresh(project)

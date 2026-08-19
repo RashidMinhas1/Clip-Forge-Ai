@@ -12,8 +12,8 @@ async def test_legacy_project_migration_preserves_project(client: AsyncClient, d
     await db_session.commit()
 
     response = await client.get(f"/api/v1/projects/{project.id}")
-    # Requires auth now
-    assert response.status_code == 401
+    # Requires auth now and user is not owner
+    assert response.status_code == 403
 
 @pytest.mark.asyncio
 async def test_new_project_assigns_owner(authenticated_client: AsyncClient, current_user: User):
@@ -26,7 +26,7 @@ async def test_new_project_assigns_owner(authenticated_client: AsyncClient, curr
 @pytest.mark.asyncio
 async def test_unauthorized_access(authenticated_client: AsyncClient, db_session):
     # User B (authenticated_client) tries to access User A's project
-    user_a = User(email="usera@test.com", hashed_password="pw")
+    user_a = User(email="usera@test.com", is_active=True)
     db_session.add(user_a)
     await db_session.commit()
 

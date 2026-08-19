@@ -33,7 +33,13 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    result = await db.execute(select(User).where(User.id == user_id))
+    import uuid
+    try:
+        user_uuid = uuid.UUID(user_id) if isinstance(user_id, str) else user_id
+    except ValueError:
+        raise credentials_exception
+
+    result = await db.execute(select(User).where(User.id == user_uuid))
     user = result.scalars().first()
     
     if user is None:
@@ -69,7 +75,13 @@ async def get_authorized_project(
     current_user: User = Depends(get_current_user)
 ):
     from app.db.models import Project
-    result = await db.execute(select(Project).where(Project.id == project_id))
+    import uuid
+    try:
+        project_uuid = uuid.UUID(project_id) if isinstance(project_id, str) else project_id
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid project ID format")
+        
+    result = await db.execute(select(Project).where(Project.id == project_uuid))
     project = result.scalars().first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")

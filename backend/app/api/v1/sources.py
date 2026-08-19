@@ -11,8 +11,8 @@ from ...services.source.ingestion import SourceIngestionService
 from ...repositories.source import SourceRepository
 from ...db.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.deps import get_authorized_project
-from app.db.models import Project
+from app.api.deps import get_authorized_project, get_current_user
+from app.db.models import Project, User
 
 router = APIRouter(prefix="/sources", tags=["Sources"])
 
@@ -36,12 +36,15 @@ async def ingest_local(
     project_id: uuid.UUID = Form(...),
     file: UploadFile = File(...),
     service: SourceIngestionService = Depends(get_ingestion_service),
-    project: Project = Depends(get_authorized_project)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ) -> Any:
     """
     Ingests a local video file.
     Validates limits and performs media probing synchronously, then persists asynchronously.
     """
+    await get_authorized_project(str(project_id), db, current_user)
+    
     if not file.filename:
         raise HTTPException(status_code=400, detail="Filename not provided")
         
@@ -60,14 +63,16 @@ async def ingest_local(
 @router.post("/youtube", response_model=SourceMetadata)
 async def ingest_youtube(
     request: YouTubeIngestionRequest,
-    project_id: uuid.UUID = Depends(lambda request: request.project_id),
     service: SourceIngestionService = Depends(get_ingestion_service),
-    project: Project = Depends(get_authorized_project)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ) -> Any:
     """
     Ingests a YouTube URL.
     Downloads and probes media synchronously, then persists asynchronously.
     """
+    await get_authorized_project(str(request.project_id), db, current_user)
+    
     result = await service.ingest_youtube_url(project_id=request.project_id, url=request.url)
     
     if result.ingestion_status == "failed":

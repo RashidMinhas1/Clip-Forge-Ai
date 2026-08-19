@@ -41,7 +41,7 @@ class Project(Base):
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
     user = relationship("User", back_populates="projects")
-    sources = relationship("Source", back_populates="project", cascade="all, delete-orphan")
+    sources = relationship("Source", back_populates="project", cascade="all, delete-orphan", lazy="selectin")
 
 
 class Source(Base):

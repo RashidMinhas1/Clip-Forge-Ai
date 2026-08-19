@@ -6,6 +6,12 @@ import { cleanup } from "@testing-library/react";
 
 // Mock ProjectContext
 const mockUseProject = vi.fn();
+
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: { email: 'test@example.com' }, logout: vi.fn(), token: 'mocked' }),
+  AuthProvider: ({ children }: any) => <div>{children}</div>
+}));
+
 vi.mock("@/contexts/ProjectContext", () => ({
   useProject: () => mockUseProject()
 }));
